@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
-import './globals.css'
 import { Toaster } from 'sonner'
-import { GitHubIcon } from './components/Icons'
+import { Github } from 'lucide-react'
+import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -43,7 +43,7 @@ function Nav() {
           href="https://github.com/juliusmarminge/trellix-trpc"
           className="flex flex-col items-center justify-center text-center text-xs font-bold uppercase text-slate-500"
         >
-          <GitHubIcon />
+          <Github className="size-8 stroke-slate-200" />
           <span className="mt-2 block">Source</span>
         </a>
         <a
@@ -51,7 +51,7 @@ function Nav() {
           className="flex flex-col items-center justify-center text-center text-xs font-bold uppercase text-slate-500"
         >
           <svg
-            className="size-8 rounded fill-white"
+            className="size-8 rounded fill-slate-200"
             viewBox="0 0 512 512"
             xmlns="http://www.w3.org/2000/svg"
           >

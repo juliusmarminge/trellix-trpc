@@ -7,6 +7,8 @@ import { updateBoardName } from '../../_actions'
 import type { BoardWithItems } from '../../_data'
 import type { ColumnType, ItemType } from '@/db/schema'
 import { NewColumn } from './new-column'
+import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 
 export function Board(props: { board: BoardWithItems }) {
   const { board } = props
@@ -45,15 +47,18 @@ export function Board(props: { board: BoardWithItems }) {
       ref={scrollContainerRef}
       style={{ backgroundColor: board.color }}
     >
-      <h1>
+      <h1 className="mx-8 my-4 flex items-center gap-2 text-2xl font-medium">
+        <Link href="/">
+          <ArrowLeft />
+        </Link>
         <EditableText
           onSubmit={(str) =>
             updateBoardName({ boardId: board.id, newName: str })
           }
           value={board.name}
           fieldName="name"
-          inputClassName="mx-8 my-4 text-2xl font-medium border border-slate-400 rounded-lg py-1 px-2 text-black"
-          buttonClassName="mx-8 my-4 text-2xl font-medium block rounded-lg text-left border border-transparent py-1 px-2 text-slate-800"
+          inputClassName="border border-slate-400 rounded-lg py-1 px-2 text-black"
+          buttonClassName="block rounded-lg text-left border border-transparent py-1 px-2 text-slate-800"
           buttonLabel={`Edit board "${board.name}" name`}
           inputLabel="Edit board name"
         >
