@@ -22,8 +22,10 @@ export default function RootLayout({
           'h-[100dvh] bg-slate-100 text-slate-900',
         ].join(' ')}
       >
-        <Nav />
-        {children}
+        <div className="flex h-full min-h-0 flex-col">
+          <Nav />
+          {children}
+        </div>
       </body>
       <Toaster />
     </html>
