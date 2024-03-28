@@ -48,7 +48,9 @@ function Nav() {
     <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900 py-4 px-8">
       <div className="block w-1/3 leading-3">
         <div className="text-2xl font-black text-white">Trellix-tRPC</div>
-        <div className="text-slate-500">an experimental tRPC Demo</div>
+        <div className="text-slate-500">
+          an experimental tRPC Demo using new RSC and Actions primitives
+        </div>
       </div>
       <div className="flex items-center gap-6">
         <a
