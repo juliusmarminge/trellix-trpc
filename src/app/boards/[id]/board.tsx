@@ -100,10 +100,10 @@ function BoardToolbar(props: { id: string; color: string; name: string }) {
 
       <div className="flex items-center gap-4">
         <div className="relative">
-          <PaletteIcon
-            className="size-8"
-            onClick={() => setShowPalette((c) => !c)}
-          />
+          {/* FIXME: Solve this with vanilla HTML/CSS */}
+          <button onClick={() => setShowPalette((c) => !c)}>
+            <PaletteIcon className="size-8" />
+          </button>
           <Block
             className={`absolute! top-10 right-0 ${showPalette ? 'block' : 'hidden'}`}
             color={color}
