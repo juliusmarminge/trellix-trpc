@@ -16,7 +16,6 @@ export const createTransfer = (
 export const parseTransfer = (dt: DataTransfer) =>
   TransferSchema.parse(JSON.parse(dt.getData(CONTENT_TYPE)))
 
-const pfx = 'Invariant failed'
 export function invariant<T>(
   condition: T,
   msg?: string | (() => string),
@@ -24,7 +23,8 @@ export function invariant<T>(
   if (condition) return
 
   const provided = typeof msg === 'function' ? msg() : msg
-  const value = provided ? `${pfx}: ${provided}` : pfx
+  const prefix = 'Invariant failed'
+  const value = provided ? `${prefix}: ${provided}` : prefix
   throw new Error(value)
 }
 
