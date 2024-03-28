@@ -110,6 +110,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
           <input type="hidden" name="id" value={props.columnId} />
         </EditableText>
         <form
+          className="p-2"
           action={async (fd) => {
             props.onColumnDelete(props.columnId)
             await deleteColumn(fd as any)
@@ -119,7 +120,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
           <input type="hidden" name="columnId" value={props.columnId} />
           <button
             type="submit"
-            className="hover:text-brand-red hover:border-brand-red mr-1 rounded border border-transparent p-1"
+            className="hover:text-brand-red hover:border-brand-red rounded border border-transparent p-1"
           >
             <Trash2Icon className="size-4" />
           </button>
