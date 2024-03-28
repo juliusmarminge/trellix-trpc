@@ -9,17 +9,17 @@ import { Columns4, Github, Loader2 } from 'lucide-react'
 
 export default async function Home() {
   return (
-    <main className="flex h-[calc(100dvh-88px)] flex-col items-center justify-center gap-4 p-16">
+    <main className="grid h-full grow">
       <Suspense
         fallback={
-          <div className="grid aspect-square w-full max-w-sm rounded-2xl bg-slate-900">
+          <div className="grid aspect-square w-full max-w-sm place-self-center rounded-2xl bg-slate-900">
             <Loader2 className="size-16 animate-spin place-self-center stroke-slate-200" />
           </div>
         }
       >
         <SignedIn>
           {({ user }) => (
-            <div className="flex min-h-96 w-full max-w-sm flex-col gap-8 rounded-2xl bg-slate-900 p-8 shadow-lg">
+            <div className="flex min-h-96 w-full max-w-sm flex-col gap-8 place-self-center rounded-2xl bg-slate-900 p-8 shadow-lg">
               <div className="flex flex-col items-center justify-center gap-2">
                 <Columns4 className="size-6 stroke-slate-200" />
                 <span className="text-lg font-bold text-slate-200">
@@ -47,7 +47,7 @@ export default async function Home() {
           )}
         </SignedIn>
         <SignedOut>
-          <div className="flex aspect-square w-full max-w-sm flex-col gap-8 rounded-2xl bg-slate-900 p-8 shadow-lg">
+          <div className="flex min-h-96 w-full max-w-sm flex-col gap-8 place-self-center rounded-2xl bg-slate-900 p-8 shadow-lg">
             <div className="flex flex-col items-center justify-center gap-2">
               <Columns4 className="size-6 stroke-slate-200" />
               <span className="text-lg font-bold text-slate-200">

@@ -43,7 +43,7 @@ export function Board(props: { board: BoardWithItems }) {
 
   return (
     <div
-      className="flex h-full min-h-0 flex-col overflow-x-scroll"
+      className="flex h-full min-h-0 grow flex-col overflow-x-scroll"
       ref={scrollContainerRef}
       style={{ backgroundColor: board.color }}
     >
