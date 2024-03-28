@@ -1,8 +1,7 @@
-'use client'
-import { forwardRef, useRef, useState } from 'react'
+import 'client-only'
+
+import { forwardRef, useOptimistic, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { useUpdateMutation } from './queries.ts'
-import { updateSchema } from './mocks/db.ts'
 
 export const SaveButton = forwardRef<
   HTMLButtonElement,
@@ -37,15 +36,8 @@ export const CancelButton = forwardRef<
   )
 })
 
-export function EditableText({
-  children,
-  fieldName,
-  value,
-  inputClassName,
-  inputLabel,
-  buttonClassName,
-  buttonLabel,
-}: {
+export function EditableText(props: {
+  onSubmit: (str: string) => void
   children: React.ReactNode
   fieldName: string
   value: string
@@ -54,43 +46,38 @@ export function EditableText({
   buttonClassName: string
   buttonLabel: string
 }) {
-  const { mutate, status, variables } = useUpdateMutation()
+  const [value, updateValue] = useOptimistic(
+    props.value,
+    (_, next: string) => next,
+  )
   const [edit, setEdit] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
-  // optimistic update
-  if (status === 'pending') {
-    value = variables.name
-  }
-
-  const submit = (form: HTMLFormElement) => {
-    const formData = new FormData(form)
-    mutate(updateSchema.parse(Object.fromEntries(formData.entries())))
+  const submit = (form: HTMLFormElement | FormData) => {
+    const fd = form instanceof FormData ? form : new FormData(form)
+    const value = fd.get(props.fieldName) as string
+    if (value && value !== props.value) {
+      props.onSubmit(value)
+      updateValue(value)
+    }
+    flushSync(() => {
+      setEdit(false)
+    })
+    buttonRef.current?.focus()
   }
 
   return edit ? (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault()
-
-        submit(event.currentTarget)
-
-        flushSync(() => {
-          setEdit(false)
-        })
-        buttonRef.current?.focus()
-      }}
-    >
-      {children}
+    <form action={submit}>
+      {props.children}
       <input
         required
         ref={inputRef}
         type="text"
-        aria-label={inputLabel}
-        name={fieldName}
+        aria-label={props.inputLabel}
+        name={props.fieldName}
         defaultValue={value}
-        className={inputClassName}
+        className={props.inputClassName}
         onKeyDown={(event) => {
           if (event.key === 'Escape') {
             flushSync(() => {
@@ -112,7 +99,7 @@ export function EditableText({
     </form>
   ) : (
     <button
-      aria-label={buttonLabel}
+      aria-label={props.buttonLabel}
       type="button"
       ref={buttonRef}
       onClick={() => {
@@ -121,7 +108,7 @@ export function EditableText({
         })
         inputRef.current?.select()
       }}
-      className={buttonClassName}
+      className={props.buttonClassName}
     >
       {value || <span className="italic text-slate-400">Edit</span>}
     </button>

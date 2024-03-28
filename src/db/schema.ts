@@ -1,3 +1,4 @@
+import type { InferSelectModel } from 'drizzle-orm'
 import { relations } from 'drizzle-orm'
 import { index, int, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 import { createInsertSchema } from 'drizzle-zod'
@@ -24,6 +25,7 @@ export const Board = sqliteTable(
     ownerIdx: index('board_owner_idx').on(table.ownerId),
   }),
 )
+export type BoardType = Omit<InferSelectModel<typeof Board>, 'id'>
 export const createBoardSchema = createInsertSchema(Board, {
   color: z.string().regex(/^#[0-9a-f]{6}$/i),
 }).omit({

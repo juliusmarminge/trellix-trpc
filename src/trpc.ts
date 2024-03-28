@@ -3,6 +3,8 @@ import { initTRPC, TRPCError } from '@trpc/server'
 import { experimental_nextAppDirCaller } from '@trpc/server/adapters/next-app-dir'
 import { cache } from 'react'
 import { auth } from './auth'
+import { db } from './db/client'
+import { z } from 'zod'
 
 export { experimental_redirect as redirect } from '@trpc/server/adapters/next-app-dir'
 
@@ -48,3 +50,25 @@ export const protectedAction = nextProc.use(async (opts) => {
     },
   })
 })
+
+export const protectedBoardAction = protectedAction
+  .input(z.object({ boardId: z.string() }))
+  .use(async (opts) => {
+    const board = await db.query.Board.findFirst({
+      where: (fields, ops) =>
+        ops.and(
+          ops.eq(fields.ownerId, opts.ctx.user.id),
+          ops.eq(fields.publicId, opts.input.boardId),
+        ),
+    })
+    if (!board) {
+      throw new TRPCError({ code: 'FORBIDDEN' })
+    }
+
+    return opts.next({
+      ctx: {
+        user: opts.ctx.user,
+        board,
+      },
+    })
+  })
