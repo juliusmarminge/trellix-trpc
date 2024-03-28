@@ -1,12 +1,14 @@
 import { db } from '@/db/client'
-import { and, eq } from 'drizzle-orm'
+import { and, asc, eq } from 'drizzle-orm'
 import { unstable_cache } from 'next/cache'
 
 export const getBoardWithItems = unstable_cache(
   async (userId: string, boardId: string) => {
     const board = await db.query.Board.findFirst({
       with: {
-        columns: { with: { items: true } },
+        columns: {
+          with: { items: { orderBy: (fields) => asc(fields.order) } },
+        },
       },
       where: (fields) =>
         and(eq(fields.ownerId, userId), eq(fields.id, boardId)),
