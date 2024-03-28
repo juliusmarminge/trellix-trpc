@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react'
+import { Suspense } from 'react'
 import { SignedIn, SignedOut } from '@/auth-helpers'
 
 import { signIn, signOut } from '@/auth'
