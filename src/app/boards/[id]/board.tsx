@@ -1,14 +1,15 @@
 'use client'
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { invariant } from '@/utils'
 import { Column as ColumnComponent } from './column'
 import { EditableText } from '../../components/primitives'
-import { deleteBoard, updateBoardName } from '../../_actions'
+import { deleteBoard, updateBoardColor, updateBoardName } from '../../_actions'
 import type { BoardWithItems } from '../../_data'
 import type { ColumnType, ItemType } from '@/db/schema'
 import { NewColumn } from './new-column'
-import { ArrowLeft, Trash2Icon } from 'lucide-react'
+import { ArrowLeft, PaletteIcon, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
+import Block from '@uiw/react-color-block'
 
 export function Board(props: { board: BoardWithItems }) {
   const { board } = props
@@ -40,6 +41,9 @@ export function Board(props: { board: BoardWithItems }) {
     column.items.push(item)
   }
 
+  // FIXME: Shouldn't need JS for this.
+  const [showPalette, setShowPalette] = useState(false)
+
   return (
     <div
       className="flex h-full min-h-0 grow flex-col overflow-x-scroll py-4 px-8"
@@ -66,19 +70,38 @@ export function Board(props: { board: BoardWithItems }) {
           </EditableText>
         </h1>
 
-        <form
-          // @ts-expect-error - fix in trpc
-          action={deleteBoard}
-        >
-          <input type="hidden" name="boardId" value={board.id} />
-          <button
-            type="submit"
-            className="flex items-center gap-2 rounded-full bg-slate-900 py-2 px-4 text-sm text-slate-200 transition-colors hover:bg-slate-800"
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <PaletteIcon
+              className="size-8"
+              onClick={() => setShowPalette((c) => !c)}
+            />
+            <Block
+              className={`absolute! top-10 right-0 ${showPalette ? 'block' : 'hidden'}`}
+              color={board.color}
+              onChange={async (color) => {
+                await updateBoardColor({
+                  boardId: board.id,
+                  newColor: color.hex,
+                })
+              }}
+            />
+          </div>
+
+          <form
+            // @ts-expect-error - fix in trpc
+            action={deleteBoard}
           >
-            <Trash2Icon className="size-4" />
-            Delete board
-          </button>
-        </form>
+            <input type="hidden" name="boardId" value={board.id} />
+            <button
+              type="submit"
+              className="flex items-center gap-2 rounded-full bg-slate-900 py-2 px-4 text-sm text-slate-200 transition-colors hover:bg-slate-800"
+            >
+              <Trash2Icon className="size-4" />
+              Delete board
+            </button>
+          </form>
+        </div>
       </div>
 
       <div className="flex-grow flex h-full min-h-0 items-start gap-4 px-8 pb-4">

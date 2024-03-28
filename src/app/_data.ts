@@ -15,7 +15,7 @@ export const getBoardWithItems = unstable_cache(
     return board
   },
   undefined,
-  { tags: ['board-details'] },
+  { tags: ['board_details'] },
 )
 export type BoardWithItems = NonNullable<
   Awaited<ReturnType<typeof getBoardWithItems>>

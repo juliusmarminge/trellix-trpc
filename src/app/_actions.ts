@@ -55,7 +55,7 @@ export const deleteBoard = protectedBoardAction
     ])
 
     revalidateTag('user_boards')
-    revalidateTag('board-details')
+    revalidateTag('board_details')
     return redirect('/')
   })
 
@@ -69,7 +69,21 @@ export const updateBoardName = protectedBoardAction
       })
       .where(eq(Board.id, input.boardId))
 
-    revalidateTag('board-details')
+    revalidateTag('board_details')
+    revalidateTag('user_boards')
+  })
+
+export const updateBoardColor = protectedBoardAction
+  .input(z.object({ newColor: z.string().regex(/^#[0-9a-f]{6}$/i) }))
+  .mutation(async ({ input }) => {
+    await db
+      .update(Board)
+      .set({
+        color: input.newColor,
+      })
+      .where(eq(Board.id, input.boardId))
+
+    revalidateTag('board_details')
     revalidateTag('user_boards')
   })
 
@@ -90,7 +104,7 @@ export const createColumn = protectedBoardAction
       order: order + 1,
     })
 
-    revalidateTag('board-details')
+    revalidateTag('board_details')
   })
 
 export const updateColumnName = protectedBoardAction
@@ -103,7 +117,7 @@ export const updateColumnName = protectedBoardAction
       })
       .where(eq(Column.id, input.columnId))
 
-    revalidateTag('board-details')
+    revalidateTag('board_details')
   })
 
 export const createItem = protectedBoardAction
@@ -123,7 +137,7 @@ export const createItem = protectedBoardAction
       title: input.title,
     })
 
-    revalidateTag('board-details')
+    revalidateTag('board_details')
   })
 
 export const moveItem = protectedBoardAction
@@ -137,7 +151,7 @@ export const moveItem = protectedBoardAction
       })
       .where(eq(Item.id, input.id))
 
-    revalidateTag('board-details')
+    revalidateTag('board_details')
   })
 
 export const deleteItem = protectedBoardAction
@@ -145,5 +159,5 @@ export const deleteItem = protectedBoardAction
   .mutation(async ({ input }) => {
     await db.delete(Item).where(eq(Item.id, input.id))
 
-    revalidateTag('board-details')
+    revalidateTag('board_details')
   })
