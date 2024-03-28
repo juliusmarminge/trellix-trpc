@@ -3,6 +3,7 @@ import { AcmeIcon, GitHubIcon } from './Icons'
 import { env } from '@/env'
 import { redirect } from 'next/navigation'
 import { AuthError } from 'next-auth'
+import Link from 'next/link'
 
 export async function AuthState() {
   const session = await auth()
@@ -17,19 +18,27 @@ export async function AuthState() {
           </span>
         </div>
 
-        <form
-          action={async () => {
-            'use server'
-            await signOut()
-          }}
-        >
-          <button
-            type="submit"
-            className="rounded-full border border-slate-700 bg-slate-900/80 py-2 px-4 text-sm text-slate-200 transition-colors hover:border-slate-500"
+        <div className="flex flex-col gap-2">
+          <Link
+            href="/board"
+            className="rounded-full border border-slate-700 bg-gray-800 py-2 px-4 text-center text-sm text-slate-200"
           >
-            Sign out
-          </button>
-        </form>
+            Go to board
+          </Link>
+          <form
+            action={async () => {
+              'use server'
+              await signOut()
+            }}
+          >
+            <button
+              type="submit"
+              className="w-full rounded-full border border-slate-700 bg-slate-900/80 py-2 px-4 text-sm text-slate-200 transition-colors hover:border-slate-500"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
       </div>
     )
   }
