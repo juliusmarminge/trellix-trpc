@@ -1,14 +1,20 @@
 import { customAlphabet } from 'nanoid'
 import { faker } from '@faker-js/faker'
+import { z } from 'zod'
 
-export const CONTENT_TYPES = {
-  card: 'application/remix-card',
-  column: 'application/remix-column',
-}
-export interface Transfer {
-  id?: string
-  title?: string
-}
+const CONTENT_TYPE = 'application/remix-card'
+const TransferSchema = z.object({ id: z.string(), title: z.string() })
+
+export const isCardTransfer = (e: React.DragEvent) =>
+  !!e.dataTransfer.types.includes(CONTENT_TYPE)
+
+export const createTransfer = (
+  dt: DataTransfer,
+  data: z.infer<typeof TransferSchema>,
+) => dt.setData(CONTENT_TYPE, JSON.stringify(data))
+
+export const parseTransfer = (dt: DataTransfer) =>
+  TransferSchema.parse(JSON.parse(dt.getData(CONTENT_TYPE)))
 
 const pfx = 'Invariant failed'
 export function invariant<T>(

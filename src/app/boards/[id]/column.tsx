@@ -3,8 +3,8 @@ import 'client-only'
 import { twMerge } from 'tailwind-merge'
 import { EditableText } from '@/app/components/primitives'
 import type { ItemType } from '@/db/schema'
-import type { Transfer } from '@/utils'
-import { CONTENT_TYPES, invariant } from '@/utils'
+
+import { invariant, isCardTransfer, parseTransfer } from '@/utils'
 import { PlusIcon, Trash2Icon } from 'lucide-react'
 import { useState, useCallback, useRef, forwardRef, useOptimistic } from 'react'
 
@@ -70,10 +70,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
         acceptDrop && `outline-brand-red outline outline-2`,
       )}
       onDragOver={(event) => {
-        if (
-          items.length === 0 &&
-          event.dataTransfer.types.includes(CONTENT_TYPES.card)
-        ) {
+        if (items.length === 0 && isCardTransfer(event)) {
           event.preventDefault()
           setAcceptDrop(true)
         }
@@ -82,11 +79,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
         setAcceptDrop(false)
       }}
       onDrop={async (event) => {
-        const transfer = JSON.parse(
-          event.dataTransfer.getData(CONTENT_TYPES.card),
-        ) as Transfer
-        invariant(transfer.id, 'missing transfer.id')
-        invariant(transfer.title, 'missing transfer.title')
+        const transfer = parseTransfer(event.dataTransfer)
 
         await moveItem({
           boardId: props.boardId,

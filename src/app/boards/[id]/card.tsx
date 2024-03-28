@@ -3,8 +3,13 @@ import 'client-only'
 import { CancelButton, SaveButton } from '@/app/components/primitives'
 import { createItem, deleteItem, moveItem } from '@/app/_actions'
 import { useRef, forwardRef, useState } from 'react'
-import type { Transfer } from '@/utils'
-import { CONTENT_TYPES, genId, invariant } from '@/utils'
+import {
+  createTransfer,
+  genId,
+  invariant,
+  isCardTransfer,
+  parseTransfer,
+} from '@/utils'
 import { Trash2Icon } from 'lucide-react'
 
 interface CardProps {
@@ -21,27 +26,14 @@ interface CardProps {
 type AcceptDrop = 'none' | 'top' | 'bottom'
 
 export const Card = forwardRef<HTMLLIElement, CardProps>(
-  (
-    {
-      title,
-      content,
-      id,
-      columnId,
-      boardId,
-      order,
-      nextOrder,
-      previousOrder,
-      onCardDelete,
-    },
-    ref,
-  ) => {
+  ({ title, content, id, columnId, boardId, order, ...props }, ref) => {
     const [acceptDrop, setAcceptDrop] = useState<AcceptDrop>('none')
 
     return (
       <li
         ref={ref}
         onDragOver={(event) => {
-          if (event.dataTransfer.types.includes(CONTENT_TYPES.card)) {
+          if (isCardTransfer(event)) {
             event.preventDefault()
             event.stopPropagation()
             const rect = event.currentTarget.getBoundingClientRect()
@@ -55,13 +47,9 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
         onDrop={async (event) => {
           event.stopPropagation()
 
-          const transfer = JSON.parse(
-            event.dataTransfer.getData(CONTENT_TYPES.card),
-          ) as Transfer
-          invariant(transfer.id, 'missing cardId')
-          invariant(transfer.title, 'missing title')
-
-          const droppedOrder = acceptDrop === 'top' ? previousOrder : nextOrder
+          const transfer = parseTransfer(event.dataTransfer)
+          const droppedOrder =
+            acceptDrop === 'top' ? props.previousOrder : props.nextOrder
           const moveOrder = (droppedOrder + order) / 2
 
           await moveItem({
@@ -87,10 +75,7 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
           className="relative w-full rounded-lg border-slate-300 bg-white py-1 px-2 text-sm shadow shadow-slate-300"
           onDragStart={(event) => {
             event.dataTransfer.effectAllowed = 'move'
-            event.dataTransfer.setData(
-              CONTENT_TYPES.card,
-              JSON.stringify({ id, title } satisfies Transfer),
-            )
+            createTransfer(event.dataTransfer, { id, title })
           }}
         >
           <h3>{title}</h3>
@@ -102,7 +87,7 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
           </div>
           <form
             action={async (fd) => {
-              onCardDelete(id)
+              props.onCardDelete(id)
               await deleteItem(fd as any)
             }}
           >
