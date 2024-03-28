@@ -40,12 +40,6 @@ function Nav() {
         <div className="text-slate-500">an experimental tRPC Demo</div>
       </div>
       <div className="flex items-center gap-6">
-        <label
-          htmlFor="countries"
-          className="block text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Delay
-        </label>
         <a
           href="https://github.com/juliusmarminge/trellix-trpc"
           className="flex flex-col items-center justify-center text-center text-xs font-bold uppercase text-slate-500"
