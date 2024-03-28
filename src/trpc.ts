@@ -5,6 +5,7 @@ import { cache } from 'react'
 import { auth } from './auth'
 import { db } from './db/client'
 import { z } from 'zod'
+import { unstable_cache } from 'next/cache'
 
 export { experimental_redirect as redirect } from '@trpc/server/adapters/next-app-dir'
 
@@ -72,3 +73,22 @@ export const protectedBoardAction = protectedAction
       },
     })
   })
+
+// Maybe? Something like this would be nice. Haven't tested it yet.
+export const cachedDataLayer = (cacheTag: string) =>
+  protectedAction.use(async (opts) => {
+    return unstable_cache(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      async (_: unknown) => {
+        const res = await opts.next()
+        if (!res.ok) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' })
+        return res // should maybe make sure this is serializable
+      },
+      [opts.ctx.user.id],
+      { tags: [cacheTag] },
+    )(opts.input)
+  })
+
+// export const getX = cachedDataLayer('x').query(async (opts) => {
+//   return 'some data'
+// })
