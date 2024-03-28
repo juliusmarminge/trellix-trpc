@@ -50,7 +50,7 @@ async function BoardList(props: { userId: string }) {
           {boards.map((board) => (
             <li key={board.publicId}>
               <Link
-                href={`/${board.publicId}`}
+                href={`/boards/${board.publicId}`}
                 className="flex items-center gap-4 text-slate-200"
               >
                 <span

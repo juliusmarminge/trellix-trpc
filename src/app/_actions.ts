@@ -33,5 +33,5 @@ export const createBoard = protectedAction
     })
     revalidatePath(`/`)
     revalidateTag('user_boards')
-    return redirect(`/${publicId}`)
+    return redirect(`/boards/${publicId}`)
   })
