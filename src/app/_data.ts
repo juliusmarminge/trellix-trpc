@@ -7,7 +7,9 @@ export const getBoardWithItems = unstable_cache(
     const board = await db.query.Board.findFirst({
       with: {
         columns: {
-          with: { items: { orderBy: (fields) => asc(fields.order) } },
+          with: {
+            items: { orderBy: (fields) => asc(fields.order) },
+          },
         },
       },
       where: (fields) =>
