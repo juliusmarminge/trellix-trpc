@@ -61,9 +61,7 @@ export function EditableText(props: {
       props.onSubmit(value)
       updateValue(value)
     }
-    flushSync(() => {
-      setEdit(false)
-    })
+    flushSync(() => setEdit(false))
     buttonRef.current?.focus()
   }
 
@@ -80,9 +78,7 @@ export function EditableText(props: {
         className={props.inputClassName}
         onKeyDown={(event) => {
           if (event.key === 'Escape') {
-            flushSync(() => {
-              setEdit(false)
-            })
+            flushSync(() => setEdit(false))
             buttonRef.current?.focus()
           }
         }}

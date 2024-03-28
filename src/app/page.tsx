@@ -1,11 +1,11 @@
 import React, { Suspense } from 'react'
 import { SignedIn, SignedOut } from '@/auth-helpers'
-import { AcmeIcon } from './components/Icons'
+
 import { signIn, signOut } from '@/auth'
 import { BoardList } from './components/board-list'
 
 import { env } from '@/env'
-import { Github, Loader2 } from 'lucide-react'
+import { Columns4, Github, Loader2 } from 'lucide-react'
 
 export default async function Home() {
   return (
@@ -21,7 +21,7 @@ export default async function Home() {
           {({ user }) => (
             <div className="flex min-h-96 w-full max-w-sm flex-col gap-8 rounded-2xl bg-slate-900 p-8 shadow-lg">
               <div className="flex flex-col items-center justify-center gap-2">
-                <AcmeIcon />
+                <Columns4 className="size-6 stroke-slate-200" />
                 <span className="text-lg font-bold text-slate-200">
                   Welcome back, {user.name}
                 </span>
@@ -49,7 +49,7 @@ export default async function Home() {
         <SignedOut>
           <div className="flex aspect-square w-full max-w-sm flex-col gap-8 rounded-2xl bg-slate-900 p-8 shadow-lg">
             <div className="flex flex-col items-center justify-center gap-2">
-              <AcmeIcon />
+              <Columns4 className="size-6 stroke-slate-200" />
               <span className="text-lg font-bold text-slate-200">
                 Sign in to use Trellix
               </span>
