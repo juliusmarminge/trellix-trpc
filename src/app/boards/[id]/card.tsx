@@ -4,7 +4,7 @@ import { CancelButton, SaveButton } from '@/app/components/primitives'
 import { createItem, deleteItem, moveItem } from '@/app/_actions'
 import { useRef, forwardRef, useState } from 'react'
 import type { Transfer } from '@/utils'
-import { CONTENT_TYPES, invariant } from '@/utils'
+import { CONTENT_TYPES, genId, invariant } from '@/utils'
 import { Trash2Icon } from 'lucide-react'
 
 interface CardProps {
@@ -16,12 +16,23 @@ interface CardProps {
   order: number
   nextOrder: number
   previousOrder: number
+  onCardDelete: (cardId: string) => void
 }
 type AcceptDrop = 'none' | 'top' | 'bottom'
 
 export const Card = forwardRef<HTMLLIElement, CardProps>(
   (
-    { title, content, id, columnId, boardId, order, nextOrder, previousOrder },
+    {
+      title,
+      content,
+      id,
+      columnId,
+      boardId,
+      order,
+      nextOrder,
+      previousOrder,
+      onCardDelete,
+    },
     ref,
   ) => {
     const [acceptDrop, setAcceptDrop] = useState<AcceptDrop>('none')
@@ -90,10 +101,9 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
             }
           </div>
           <form
-            onSubmit={async (event) => {
-              event.preventDefault()
-              // const formData = new FormData(event.currentTarget)
-              await deleteItem({ boardId, id })
+            action={async (fd) => {
+              onCardDelete(id)
+              await deleteItem(fd as any)
             }}
           >
             <input type="hidden" name="id" value={id} />
@@ -102,9 +112,6 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
               aria-label="Delete card"
               className="hover:text-brand-red absolute top-4 right-4"
               type="submit"
-              onClick={(event) => {
-                event.stopPropagation()
-              }}
             >
               <Trash2Icon className="size-4" />
             </button>
@@ -119,35 +126,27 @@ export function NewCard({
   columnId,
   boardId,
   nextOrder,
+  onCardCreate,
   onComplete,
 }: {
   columnId: string
   boardId: string
   nextOrder: number
+  onCardCreate: (item: { id: string; title: string }) => void
   onComplete: () => void
 }) {
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const itemId = genId('itm')
 
   return (
     <form
-      method="post"
       className="border-t-2 border-b-2 border-transparent py-1 px-2"
-      onSubmit={async (event) => {
-        event.preventDefault()
-
-        const formData = new FormData(event.currentTarget)
-        const id = crypto.randomUUID()
-        formData.set('id', id)
-
+      action={async (fd) => {
         invariant(textAreaRef.current)
         textAreaRef.current.value = ''
-
-        await createItem({
-          boardId,
-          columnId,
-          title: formData.get('title') as string,
-        })
+        onCardCreate(Object.fromEntries(fd.entries()) as any)
+        await createItem(fd as any)
       }}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -155,6 +154,7 @@ export function NewCard({
         }
       }}
     >
+      <input type="hidden" name="id" value={itemId} />
       <input type="hidden" name="boardId" value={boardId} />
       <input type="hidden" name="columnId" value={columnId} />
       <input type="hidden" name="order" value={nextOrder} />

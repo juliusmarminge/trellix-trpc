@@ -29,7 +29,6 @@ export const createBoardSchema = createInsertSchema(Board, {
 }).omit({
   id: true,
   ownerId: true,
-  publicId: true,
 })
 
 export const Column = sqliteTable(
@@ -45,9 +44,9 @@ export const Column = sqliteTable(
   }),
 )
 export type ColumnType = InferSelectModel<typeof Column>
-export const createColumnSchema = createInsertSchema(Column, {}).omit({
-  id: true,
-  publicId: true,
+export const createColumnSchema = createInsertSchema(Column, {
+  id: z.string().startsWith('col_'),
+}).omit({
   order: true,
 })
 
@@ -67,9 +66,9 @@ export const Item = sqliteTable(
   }),
 )
 export type ItemType = InferSelectModel<typeof Item>
-export const createItemSchema = createInsertSchema(Item, {}).omit({
-  id: true,
-  publicId: true,
+export const createItemSchema = createInsertSchema(Item, {
+  id: z.string().startsWith('itm_'),
+}).omit({
   order: true,
 })
 
@@ -89,6 +88,6 @@ export const ColumnRelations = relations(Column, ({ many, one }) => ({
 }))
 
 export const ItemRelations = relations(Item, ({ one }) => ({
-  column: one(Column, { fields: [Item.id], references: [Column.id] }),
+  column: one(Column, { fields: [Item.columnId], references: [Column.id] }),
   board: one(Board, { fields: [Item.boardId], references: [Board.id] }),
 }))

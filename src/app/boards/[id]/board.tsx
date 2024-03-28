@@ -1,19 +1,16 @@
 'use client'
-import { useCallback, useRef, useState } from 'react'
-import { invariant } from '@/utils'
+
+import { useCallback, useOptimistic, useRef, useState } from 'react'
 import { Column } from './column'
 import { EditableText } from '../../components/primitives'
 import { deleteBoard, updateBoardColor, updateBoardName } from '../../_actions'
-import type { BoardWithItems } from '../../_data'
-import type { ColumnType, ItemType } from '@/db/schema'
+import type { BoardWithColumns } from '../../_data'
 import { NewColumn } from './new-column'
 import { ArrowLeft, PaletteIcon, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
 import Block from '@uiw/react-color-block'
 
-export function Board(props: { board: BoardWithItems }) {
-  const { board } = props
-
+export function Board({ board }: { board: BoardWithColumns }) {
   // scroll right when new columns are added
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const columnRef = useCallback(
@@ -26,20 +23,28 @@ export function Board(props: { board: BoardWithItems }) {
     [scrollContainerRef],
   )
 
-  const itemsById = new Map(board.items.map((item) => [item.id, item]))
-  type ColumnWithItems = ColumnType & { items: ItemType[] }
-  const columns = new Map<string, ColumnWithItems>()
-  for (const column of [...board.columns]) {
-    columns.set(column.id, { ...column, items: [] })
-  }
-
-  // add items to their columns
-  for (const item of itemsById.values()) {
-    const columnId = item.columnId
-    const column = columns.get(columnId)
-    invariant(column, 'missing column')
-    column.items.push(item)
-  }
+  const [columns, updateColumns] = useOptimistic(
+    new Map(Object.entries(board.columns)),
+    (
+      state,
+      action:
+        | { intent: 'add'; id: string; name: string }
+        | { intent: 'delete'; id: string },
+    ) => {
+      if (action.intent === 'add') {
+        state.set(action.id, {
+          boardId: board.id,
+          id: action.id,
+          items: [],
+          order: Object.keys(state).length,
+          name: action.name,
+        })
+      } else if (action.intent === 'delete') {
+        state.delete(action.id)
+      }
+      return state
+    },
+  )
 
   return (
     <div
@@ -58,12 +63,16 @@ export function Board(props: { board: BoardWithItems }) {
               columnId={col.id}
               boardId={board.id}
               items={col.items}
+              onColumnDelete={(id) => updateColumns({ intent: 'delete', id })}
             />
           )
         })}
         <NewColumn
           boardId={board.id}
-          editInitially={board.columns.length === 0}
+          editInitially={Object.keys(board.columns).length === 0}
+          onColumnAdd={(col: { id: string; name: string }) =>
+            updateColumns({ intent: 'add', ...col })
+          }
         />
       </div>
 
@@ -116,10 +125,7 @@ function BoardToolbar(props: { id: string; color: string; name: string }) {
           />
         </div>
 
-        <form
-          // @ts-expect-error - fix in trpc
-          action={deleteBoard}
-        >
+        <form action={deleteBoard as any}>
           <input type="hidden" name="boardId" value={id} />
           <button
             type="submit"

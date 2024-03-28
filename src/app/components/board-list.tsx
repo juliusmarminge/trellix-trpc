@@ -11,10 +11,7 @@ export async function BoardList(props: { userId: string }) {
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <span className="text-sm font-bold text-slate-200">Your boards</span>
-        <form
-          // @ts-expect-error - fix in trpc
-          action={createBoard}
-        >
+        <form action={createBoard as any}>
           <input type="hidden" name="name" value={genRandomName()} />
           <input type="hidden" name="color" value={faker.color.rgb()} />
           <button

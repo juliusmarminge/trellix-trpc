@@ -2,33 +2,33 @@ import 'client-only'
 import { useState, useRef } from 'react'
 
 import { CancelButton, SaveButton } from '@/app/components/primitives'
-import { invariant } from '@/utils'
+import { genId, invariant } from '@/utils'
 import { PlusIcon } from 'lucide-react'
 import { createColumn } from '@/app/_actions'
 
 export function NewColumn({
   boardId,
   editInitially,
+  onColumnAdd,
 }: {
   boardId: string
   editInitially: boolean
+  onColumnAdd: (col: { id: string; name: string }) => void
 }) {
   const [editing, setEditing] = useState(editInitially)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  //   const { mutate } = useNewColumnMutation()
-
   return editing ? (
     <form
       className="flex max-h-full w-80 flex-col gap-5 overflow-hidden rounded-xl border bg-slate-100 p-2 shadow"
-      onSubmit={async (event) => {
-        event.preventDefault()
-        const formData = new FormData(event.currentTarget)
-        formData.set('id', crypto.randomUUID())
+      action={async (fd) => {
         invariant(inputRef.current, 'missing input ref')
         inputRef.current.value = ''
-        await createColumn({ boardId, name: formData.get('name') as string })
-        // mutate(newColumnSchema.parse(Object.fromEntries(formData.entries())))
+        onColumnAdd({
+          id: fd.get('id') as string,
+          name: fd.get('name') as string,
+        })
+        await createColumn(fd as any)
       }}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -36,6 +36,7 @@ export function NewColumn({
         }
       }}
     >
+      <input type="hidden" name="id" value={genId('col')} />
       <input type="hidden" name="boardId" value={boardId} />
       <input
         autoFocus

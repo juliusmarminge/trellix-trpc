@@ -96,9 +96,8 @@ export const createColumn = protectedBoardAction
       .from(Column)
       .where(eq(Column.boardId, input.boardId))
 
-    const id = genId('col')
     await db.insert(Column).values({
-      id,
+      id: input.id,
       boardId: input.boardId,
       name: input.name,
       order: order + 1,
@@ -139,9 +138,8 @@ export const createItem = protectedBoardAction
       .from(Column)
       .where(eq(Column.id, input.columnId))
 
-    const id = genId('itm')
     await db.insert(Item).values({
-      id,
+      id: input.id,
       boardId: input.boardId,
       columnId: input.columnId,
       order: order + 1,
