@@ -3,11 +3,11 @@ import { useCallback, useRef } from 'react'
 import { invariant } from '@/utils'
 import { Column as ColumnComponent } from './column'
 import { EditableText } from '../../components/primitives'
-import { updateBoardName } from '../../_actions'
+import { deleteBoard, updateBoardName } from '../../_actions'
 import type { BoardWithItems } from '../../_data'
 import type { ColumnType, ItemType } from '@/db/schema'
 import { NewColumn } from './new-column'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
 
 export function Board(props: { board: BoardWithItems }) {
@@ -18,7 +18,6 @@ export function Board(props: { board: BoardWithItems }) {
   const columnRef = useCallback(
     (node: HTMLElement | null) => {
       if (node && scrollContainerRef.current) {
-        invariant(scrollContainerRef.current, 'no scroll container')
         scrollContainerRef.current.scrollLeft =
           scrollContainerRef.current.scrollWidth
       }
@@ -43,28 +42,44 @@ export function Board(props: { board: BoardWithItems }) {
 
   return (
     <div
-      className="flex h-full min-h-0 grow flex-col overflow-x-scroll"
+      className="flex h-full min-h-0 grow flex-col overflow-x-scroll py-4 px-8"
       ref={scrollContainerRef}
       style={{ backgroundColor: board.color }}
     >
-      <h1 className="mx-8 my-4 flex items-center gap-2 text-2xl font-medium">
-        <Link href="/">
-          <ArrowLeft />
-        </Link>
-        <EditableText
-          onSubmit={(str) =>
-            updateBoardName({ boardId: board.id, newName: str })
-          }
-          value={board.name}
-          fieldName="name"
-          inputClassName="border border-slate-400 rounded-lg py-1 px-2 text-black"
-          buttonClassName="block rounded-lg text-left border border-transparent py-1 px-2 text-slate-800"
-          buttonLabel={`Edit board "${board.name}" name`}
-          inputLabel="Edit board name"
+      <div className="flex items-center justify-between">
+        <h1 className="flex items-center gap-2 text-2xl font-medium">
+          <Link href="/">
+            <ArrowLeft />
+          </Link>
+          <EditableText
+            onSubmit={(str) =>
+              updateBoardName({ boardId: board.id, newName: str })
+            }
+            value={board.name}
+            fieldName="name"
+            inputClassName="border border-slate-400 rounded-lg py-1 px-2 text-black"
+            buttonClassName="rounded-lg text-left border border-transparent py-1 px-2 text-slate-800"
+            buttonLabel={`Edit board "${board.name}" name`}
+            inputLabel="Edit board name"
+          >
+            <input type="hidden" name="boardId" value={board.id} />
+          </EditableText>
+        </h1>
+
+        <form
+          // @ts-expect-error - fix in trpc
+          action={deleteBoard}
         >
           <input type="hidden" name="boardId" value={board.id} />
-        </EditableText>
-      </h1>
+          <button
+            type="submit"
+            className="flex items-center gap-2 rounded-full bg-slate-900 py-2 px-4 text-sm text-slate-200 transition-colors hover:bg-slate-800"
+          >
+            <Trash2Icon className="size-4" />
+            Delete board
+          </button>
+        </form>
+      </div>
 
       <div className="flex-grow flex h-full min-h-0 items-start gap-4 px-8 pb-4">
         {[...columns.values()].map((col) => {

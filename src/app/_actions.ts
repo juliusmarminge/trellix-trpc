@@ -45,6 +45,20 @@ export const createBoard = protectedAction
     return redirect(`/boards/${id}`)
   })
 
+export const deleteBoard = protectedBoardAction
+  .input(z.object({ boardId: z.string() }))
+  .mutation(async ({ input }) => {
+    await Promise.all([
+      db.delete(Item).where(eq(Item.boardId, input.boardId)),
+      db.delete(Column).where(eq(Column.boardId, input.boardId)),
+      db.delete(Board).where(eq(Board.id, input.boardId)),
+    ])
+
+    revalidateTag('user_boards')
+    revalidateTag('board-details')
+    return redirect('/')
+  })
+
 export const updateBoardName = protectedBoardAction
   .input(z.object({ newName: z.string() }))
   .mutation(async ({ input }) => {
