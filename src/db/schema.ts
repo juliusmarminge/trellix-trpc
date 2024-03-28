@@ -1,6 +1,7 @@
 import { relations } from 'drizzle-orm'
 import { index, int, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 import { createInsertSchema } from 'drizzle-zod'
+import { z } from 'zod'
 
 export const User = sqliteTable('user', {
   id: int('id').primaryKey({ autoIncrement: true }),
@@ -23,7 +24,9 @@ export const Board = sqliteTable(
     ownerIdx: index('board_owner_idx').on(table.ownerId),
   }),
 )
-export const createBoardSchema = createInsertSchema(Board, {}).omit({
+export const createBoardSchema = createInsertSchema(Board, {
+  color: z.string().regex(/^#[0-9a-f]{6}$/i),
+}).omit({
   id: true,
   ownerId: true,
   publicId: true,

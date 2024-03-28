@@ -22,11 +22,55 @@ const getBoards = unstable_cache(
   { tags: ['user_boards'] },
 )
 
+async function BoardList(props: { userId: string }) {
+  const boards = await getBoards(props.userId)
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold text-slate-200">Your boards</span>
+        <form
+          // @ts-expect-error - fix in trpc
+          action={createBoard}
+        >
+          <input type="hidden" name="name" value={genRandomName()} />
+          <input type="hidden" name="color" value={faker.color.rgb()} />
+          <button
+            type="submit"
+            className="rounded-full border border-slate-700 bg-slate-900/80 p-2 text-sm text-slate-200 transition-colors hover:border-slate-500"
+          >
+            <PlusIcon className="size-4" />
+          </button>
+        </form>
+      </div>
+      {boards.length === 0 && (
+        <span className="text-sm text-slate-500">No boards yet</span>
+      )}
+      {boards.length > 0 && (
+        <ul className="flex flex-col gap-2">
+          {boards.map((board) => (
+            <li key={board.publicId}>
+              <Link
+                href={`/${board.publicId}`}
+                className="flex items-center gap-4 text-slate-200"
+              >
+                <span
+                  style={{ backgroundColor: board.color }}
+                  className="size-4 rounded-full"
+                />
+                <span>{board.name}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 export async function AuthState() {
   const session = await auth()
 
   if (session?.user) {
-    const boards = await getBoards(session.user.id)
     return (
       <div className="border-brand-aqua flex w-full max-w-sm flex-col gap-8 rounded-2xl border bg-slate-900 p-8 shadow-lg">
         <div className="flex flex-col items-center justify-center gap-2">
@@ -35,43 +79,9 @@ export async function AuthState() {
             Welcome back, {session.user.name}
           </span>
         </div>
+        <BoardList userId={session.user.id} />
 
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-slate-200">
-              Your boards
-            </span>
-            <form
-              // @ts-expect-error - fix in trpc
-              action={createBoard}
-            >
-              <input type="hidden" name="name" value={genRandomName()} />
-              <input type="hidden" name="color" value={faker.color.rgb()} />
-              <button
-                type="submit"
-                className="rounded-full border border-slate-700 bg-slate-900/80 p-2 text-sm text-slate-200 transition-colors hover:border-slate-500"
-              >
-                <PlusIcon className="size-4" />
-              </button>
-            </form>
-          </div>
-          <ul className="flex flex-col gap-2">
-            {boards.map((board) => (
-              <li key={board.publicId}>
-                <Link
-                  href={`/${board.publicId}`}
-                  className="flex items-center gap-4 text-slate-200"
-                >
-                  <span
-                    style={{ backgroundColor: board.color }}
-                    className="size-4 rounded-full"
-                  />
-                  <span>{board.name}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-
           <form
             action={async () => {
               'use server'
