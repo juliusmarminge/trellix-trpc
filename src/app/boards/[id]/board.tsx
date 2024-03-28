@@ -41,69 +41,13 @@ export function Board(props: { board: BoardWithItems }) {
     column.items.push(item)
   }
 
-  // FIXME: Shouldn't need JS for this.
-  const [showPalette, setShowPalette] = useState(false)
-
   return (
     <div
-      className="flex h-full min-h-0 grow flex-col overflow-x-scroll py-4 px-8"
+      className="flex h-full min-h-0 grow flex-col gap-4 overflow-x-scroll py-4 px-8"
       ref={scrollContainerRef}
       style={{ backgroundColor: board.color }}
     >
-      <div className="flex items-center justify-between">
-        <h1 className="flex items-center gap-2 text-2xl font-medium">
-          <Link href="/">
-            <ArrowLeft />
-          </Link>
-          <EditableText
-            onSubmit={(str) =>
-              updateBoardName({ boardId: board.id, newName: str })
-            }
-            value={board.name}
-            fieldName="name"
-            inputClassName="border border-slate-400 rounded-lg py-1 px-2 text-black"
-            buttonClassName="rounded-lg text-left border border-transparent py-1 px-2 text-slate-800"
-            buttonLabel={`Edit board "${board.name}" name`}
-            inputLabel="Edit board name"
-          >
-            <input type="hidden" name="boardId" value={board.id} />
-          </EditableText>
-        </h1>
-
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <PaletteIcon
-              className="size-8"
-              onClick={() => setShowPalette((c) => !c)}
-            />
-            <Block
-              className={`absolute! top-10 right-0 ${showPalette ? 'block' : 'hidden'}`}
-              color={board.color}
-              onChange={async (color) => {
-                await updateBoardColor({
-                  boardId: board.id,
-                  newColor: color.hex,
-                })
-              }}
-            />
-          </div>
-
-          <form
-            // @ts-expect-error - fix in trpc
-            action={deleteBoard}
-          >
-            <input type="hidden" name="boardId" value={board.id} />
-            <button
-              type="submit"
-              className="flex items-center gap-2 rounded-full bg-slate-900 py-2 px-4 text-sm text-slate-200 transition-colors hover:bg-slate-800"
-            >
-              <Trash2Icon className="size-4" />
-              Delete board
-            </button>
-          </form>
-        </div>
-      </div>
-
+      <BoardToolbar id={board.id} color={board.color} name={board.name} />
       <div className="flex-grow flex h-full min-h-0 items-start gap-4 px-8 pb-4">
         {[...columns.values()].map((col) => {
           return (
@@ -125,6 +69,67 @@ export function Board(props: { board: BoardWithItems }) {
 
       {/* trolling you to add some extra margin to the right of the container with a whole dang div */}
       <div data-lol className="flex-shrink-0 h-1 w-8" />
+    </div>
+  )
+}
+
+function BoardToolbar(props: { id: string; color: string; name: string }) {
+  const { id, color, name } = props
+
+  // FIXME: Shouldn't need JS for this.
+  const [showPalette, setShowPalette] = useState(false)
+
+  return (
+    <div className="flex items-center justify-between">
+      <h1 className="flex items-center gap-2 text-2xl font-medium">
+        <Link href="/">
+          <ArrowLeft />
+        </Link>
+        <EditableText
+          onSubmit={(newName) => updateBoardName({ boardId: id, newName })}
+          value={name}
+          fieldName="name"
+          inputClassName="border border-slate-400 rounded-lg py-1 px-2 text-black"
+          buttonClassName="rounded-lg text-left border border-transparent py-1 px-2 text-slate-800"
+          buttonLabel={`Edit board "${name}" name`}
+          inputLabel="Edit board name"
+        >
+          <input type="hidden" name="boardId" value={id} />
+        </EditableText>
+      </h1>
+
+      <div className="flex items-center gap-4">
+        <div className="relative">
+          <PaletteIcon
+            className="size-8"
+            onClick={() => setShowPalette((c) => !c)}
+          />
+          <Block
+            className={`absolute! top-10 right-0 ${showPalette ? 'block' : 'hidden'}`}
+            color={color}
+            onChange={async (color) => {
+              await updateBoardColor({
+                boardId: id,
+                newColor: color.hex,
+              })
+            }}
+          />
+        </div>
+
+        <form
+          // @ts-expect-error - fix in trpc
+          action={deleteBoard}
+        >
+          <input type="hidden" name="boardId" value={id} />
+          <button
+            type="submit"
+            className="flex items-center gap-2 rounded-full bg-slate-900 py-2 px-4 text-sm text-slate-200 transition-colors hover:bg-slate-800"
+          >
+            <Trash2Icon className="size-4" />
+            Delete board
+          </button>
+        </form>
+      </div>
     </div>
   )
 }
