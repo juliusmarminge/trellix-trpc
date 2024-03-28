@@ -20,7 +20,7 @@ export async function AuthState() {
 
         <div className="flex flex-col gap-2">
           <Link
-            href="/board"
+            href="/1"
             className="rounded-full border border-slate-700 bg-gray-800 py-2 px-4 text-center text-sm text-slate-200"
           >
             Go to board
@@ -63,7 +63,7 @@ export async function AuthState() {
               // do something
             }
           }
-          redirect('/board')
+          redirect('/1')
         }}
       >
         <label className="flex flex-col gap-1">
@@ -99,7 +99,7 @@ export async function AuthState() {
               // do something
             }
           }
-          redirect('/board')
+          redirect('/1')
         }}
       >
         <button
