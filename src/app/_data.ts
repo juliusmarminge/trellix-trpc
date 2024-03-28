@@ -1,7 +1,6 @@
 import { db } from '@/db/client'
 import { and, eq } from 'drizzle-orm'
 import { unstable_cache } from 'next/cache'
-import { notFound } from 'next/navigation'
 
 export const getBoardWithItems = unstable_cache(
   async (userId: string, boardId: string) => {
@@ -13,13 +12,14 @@ export const getBoardWithItems = unstable_cache(
       where: (fields) =>
         and(eq(fields.ownerId, userId), eq(fields.id, boardId)),
     })
-    if (!board) notFound()
     return board
   },
   undefined,
   { tags: ['board-details'] },
 )
-export type BoardWithItems = Awaited<ReturnType<typeof getBoardWithItems>>
+export type BoardWithItems = NonNullable<
+  Awaited<ReturnType<typeof getBoardWithItems>>
+>
 
 export const getBoards = unstable_cache(
   (userId: string) =>
