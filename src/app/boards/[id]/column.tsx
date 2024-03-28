@@ -71,7 +71,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
           setAcceptDrop(false)
         }}
       >
-        <div className="flex items-center p-2">
+        <div className="flex items-center gap-2 p-2">
           <EditableText
             onSubmit={async (str) => {
               await updateColumnName({ boardId, columnId, newName: str })

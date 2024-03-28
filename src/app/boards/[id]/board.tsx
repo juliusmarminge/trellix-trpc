@@ -80,8 +80,8 @@ function BoardToolbar(props: { id: string; color: string; name: string }) {
   const [showPalette, setShowPalette] = useState(false)
 
   return (
-    <div className="flex items-center justify-between">
-      <h1 className="flex items-center gap-2 text-2xl font-medium">
+    <div className="flex items-center justify-between gap-4">
+      <h1 className="flex flex-1 items-center gap-2 text-2xl font-medium">
         <Link href="/">
           <ArrowLeft />
         </Link>
@@ -89,8 +89,8 @@ function BoardToolbar(props: { id: string; color: string; name: string }) {
           onSubmit={(newName) => updateBoardName({ boardId: id, newName })}
           value={name}
           fieldName="name"
-          inputClassName="border border-slate-400 rounded-lg py-1 px-2 text-black"
-          buttonClassName="rounded-lg text-left border border-transparent py-1 px-2 text-slate-800"
+          inputClassName="border border-slate-400 w-full rounded-lg py-1 px-2 text-black"
+          buttonClassName="rounded-lg text-left border w-max border-transparent py-1 px-2 text-slate-800"
           buttonLabel={`Edit board "${name}" name`}
           inputLabel="Edit board name"
         >
@@ -99,7 +99,7 @@ function BoardToolbar(props: { id: string; color: string; name: string }) {
       </h1>
 
       <div className="flex items-center gap-4">
-        <div className="relative">
+        <div className="relative flex items-center">
           {/* FIXME: Solve this with vanilla HTML/CSS */}
           <button onClick={() => setShowPalette((c) => !c)}>
             <PaletteIcon className="size-8" />

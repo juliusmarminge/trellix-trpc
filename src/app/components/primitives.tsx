@@ -66,7 +66,7 @@ export function EditableText(props: {
   }
 
   return edit ? (
-    <form action={submit}>
+    <form action={submit} className="w-full">
       {props.children}
       <input
         required
