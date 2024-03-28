@@ -119,7 +119,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
           <input type="hidden" name="columnId" value={props.columnId} />
           <button
             type="submit"
-            className="flex items-center gap-2 rounded-lg bg-slate-900 p-2 text-sm text-slate-200 transition-colors hover:bg-slate-800"
+            className="hover:text-brand-red hover:border-brand-red mr-1 rounded border border-transparent p-1"
           >
             <Trash2Icon className="size-4" />
           </button>

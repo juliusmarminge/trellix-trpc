@@ -95,7 +95,7 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
             <input type="hidden" name="boardId" value={boardId} />
             <button
               aria-label="Delete card"
-              className="hover:text-brand-red absolute top-4 right-4"
+              className="hover:text-brand-red hover:border-brand-red absolute top-2 right-2 rounded border border-transparent p-1"
               type="submit"
             >
               <Trash2Icon className="size-4" />
