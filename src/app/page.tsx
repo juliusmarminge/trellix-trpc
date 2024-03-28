@@ -26,7 +26,9 @@ export default async function Home() {
                   Welcome back, {user.name}
                 </span>
               </div>
-              <BoardList userId={user.id} />
+              <Suspense fallback={<BoardList.Loading />}>
+                <BoardList userId={user.id} />
+              </Suspense>
 
               <div className="flex flex-col gap-2">
                 <form
