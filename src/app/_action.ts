@@ -3,7 +3,7 @@
 import { randomUUID } from 'node:crypto'
 import { db } from '@/db/client'
 import { addPostSchema, Post } from '@/db/schema'
-import { protectedAction, redirect } from '@/server/trpc'
+import { protectedAction, redirect } from '@/trpc'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 

@@ -1,1 +1,1 @@
-export { GET, POST } from '@/server/auth'
+export { GET, POST } from '@/auth'

@@ -1,4 +1,4 @@
-import { auth, signIn, signOut } from '@/server/auth'
+import { auth, signIn, signOut } from '@/auth'
 import { AcmeIcon, GitHubIcon } from './Icons'
 import { env } from '@/env'
 import { redirect } from 'next/navigation'
