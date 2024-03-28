@@ -120,6 +120,17 @@ export const updateColumnName = protectedBoardAction
     revalidateTag('board_details')
   })
 
+export const deleteColumn = protectedBoardAction
+  .input(z.object({ columnId: z.string() }))
+  .mutation(async ({ input }) => {
+    await Promise.all([
+      db.delete(Item).where(eq(Item.columnId, input.columnId)),
+      db.delete(Column).where(eq(Column.id, input.columnId)),
+    ])
+
+    revalidateTag('board_details')
+  })
+
 export const createItem = protectedBoardAction
   .input(createItemSchema)
   .mutation(async ({ input }) => {

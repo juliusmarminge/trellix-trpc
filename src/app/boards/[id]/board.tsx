@@ -1,7 +1,7 @@
 'use client'
 import { useCallback, useRef, useState } from 'react'
 import { invariant } from '@/utils'
-import { Column as ColumnComponent } from './column'
+import { Column } from './column'
 import { EditableText } from '../../components/primitives'
 import { deleteBoard, updateBoardColor, updateBoardName } from '../../_actions'
 import type { BoardWithItems } from '../../_data'
@@ -51,7 +51,7 @@ export function Board(props: { board: BoardWithItems }) {
       <div className="flex-grow flex h-full min-h-0 items-start gap-4 px-8 pb-4">
         {[...columns.values()].map((col) => {
           return (
-            <ColumnComponent
+            <Column
               ref={columnRef}
               key={col.id}
               name={col.name}

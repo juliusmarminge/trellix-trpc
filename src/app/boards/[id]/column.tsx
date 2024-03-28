@@ -4,12 +4,12 @@ import { EditableText } from '@/app/components/primitives'
 import type { ItemType } from '@/db/schema'
 import type { Transfer } from '@/utils'
 import { CONTENT_TYPES, invariant } from '@/utils'
-import { PlusIcon } from 'lucide-react'
+import { PlusIcon, Trash2Icon } from 'lucide-react'
 import { useState, useCallback, useRef, forwardRef } from 'react'
 
 import { flushSync } from 'react-dom'
 import { Card, NewCard } from './card'
-import { moveItem, updateColumnName } from '@/app/_actions'
+import { deleteColumn, moveItem, updateColumnName } from '@/app/_actions'
 
 interface ColumnProps {
   name: string
@@ -71,7 +71,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
           setAcceptDrop(false)
         }}
       >
-        <div className="p-2">
+        <div className="flex items-center p-2">
           <EditableText
             onSubmit={async (str) => {
               await updateColumnName({ boardId, columnId, newName: str })
@@ -85,6 +85,19 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
           >
             <input type="hidden" name="id" value={columnId} />
           </EditableText>
+          <form
+            // @ts-expect-error - fix in trpc
+            action={deleteColumn}
+          >
+            <input type="hidden" name="boardId" value={boardId} />
+            <input type="hidden" name="columnId" value={columnId} />
+            <button
+              type="submit"
+              className="flex items-center gap-2 rounded-lg bg-slate-900 p-2 text-sm text-slate-200 transition-colors hover:bg-slate-800"
+            >
+              <Trash2Icon className="size-4" />
+            </button>
+          </form>
         </div>
 
         <ul ref={listRef} className="flex-grow overflow-auto">
