@@ -25,17 +25,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={[
-          GeistSans.variable,
-          'h-[100dvh] bg-slate-100 text-slate-900',
-        ].join(' ')}
-      >
-        <div className="flex h-full min-h-0 flex-col">
-          <Nav />
-          <Theme>{children}</Theme>
-        </div>
-      </body>
+      <Theme asChild>
+        <body
+          className={[
+            GeistSans.variable,
+            'h-[100dvh] bg-slate-100 text-slate-900',
+          ].join(' ')}
+        >
+          <div className="flex h-full min-h-0 flex-col">
+            <Nav />
+            {children}
+          </div>
+        </body>
+      </Theme>
       <Toaster />
     </html>
   )
