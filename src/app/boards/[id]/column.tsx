@@ -1,21 +1,21 @@
-'use client'
+import 'client-only'
 
+import { EditableText } from '@/app/components/primitives'
+import type { ItemType } from '@/db/schema'
+import type { Transfer } from '@/utils'
+import { CONTENT_TYPES, invariant } from '@/utils'
+import { PlusIcon } from 'lucide-react'
 import { useState, useCallback, useRef, forwardRef } from 'react'
 
-import { INTENTS, type RenderedItem, CONTENT_TYPES } from './types'
 import { flushSync } from 'react-dom'
-import { EditableText } from './components'
-import { Icon } from './icons/icons.tsx'
-import { NewCard } from './new-card.tsx'
-import { Card } from './card.tsx'
-import { useMoveCardMutation } from './queries.ts'
-import { invariant } from '@/utils'
+import { Card, NewCard } from './card'
+import { moveItem, updateColumnName } from '@/app/_actions'
 
 interface ColumnProps {
   name: string
-  boardId: number
+  boardId: string
   columnId: string
-  items: RenderedItem[]
+  items: ItemType[]
 }
 
 export const Column = forwardRef<HTMLDivElement, ColumnProps>(
@@ -33,7 +33,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
       listRef.current.scrollTop = listRef.current.scrollHeight
     }
 
-    const moveCard = useMoveCardMutation()
+    // const moveCard = useMoveCardMutation()
 
     return (
       <div
@@ -54,19 +54,18 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
         onDragLeave={() => {
           setAcceptDrop(false)
         }}
-        onDrop={(event) => {
+        onDrop={async (event) => {
           const transfer = JSON.parse(
             event.dataTransfer.getData(CONTENT_TYPES.card),
-          )
+          ) as Transfer
           invariant(transfer.id, 'missing transfer.id')
           invariant(transfer.title, 'missing transfer.title')
 
-          moveCard.mutate({
-            order: 1,
-            columnId: columnId,
+          await moveItem({
             boardId,
+            columnId,
             id: transfer.id,
-            title: transfer.title,
+            order: 1,
           })
 
           setAcceptDrop(false)
@@ -74,6 +73,9 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
       >
         <div className="p-2">
           <EditableText
+            onSubmit={async (str) => {
+              await updateColumnName({ boardId, columnId, newName: str })
+            }}
             fieldName="name"
             value={name}
             inputLabel="Edit column name"
@@ -81,7 +83,6 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
             inputClassName="border border-slate-400 w-full rounded-lg py-1 px-2 font-medium text-black"
             buttonClassName="block rounded-lg text-left w-full border border-transparent py-1 px-2 font-medium text-slate-600"
           >
-            <input type="hidden" name="intent" value={INTENTS.updateColumn} />
             <input type="hidden" name="id" value={columnId} />
           </EditableText>
         </div>
@@ -127,7 +128,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
               }}
               className="flex w-full items-center gap-2 rounded-lg p-2 text-left font-medium text-slate-500 hover:bg-slate-200 focus:bg-slate-200"
             >
-              <Icon name="plus" /> Add a card
+              <PlusIcon /> Add a card
             </button>
           </div>
         )}

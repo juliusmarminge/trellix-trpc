@@ -58,7 +58,7 @@ export const protectedBoardAction = protectedAction
       where: (fields, ops) =>
         ops.and(
           ops.eq(fields.ownerId, opts.ctx.user.id),
-          ops.eq(fields.publicId, opts.input.boardId),
+          ops.eq(fields.id, opts.input.boardId),
         ),
     })
     if (!board) {

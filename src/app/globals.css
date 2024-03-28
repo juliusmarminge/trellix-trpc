@@ -2,12 +2,12 @@
 
 @theme {
   /* Colors */
-  --color-brand-red: '#f44250';
-  --color-brand-yellow: '#fecc1b';
-  --color-brand-green: '#6bd968';
-  --color-brand-aqua: '#3defe9';
-  --color-brand-blue: '#3992ff';
-  --color-brand-pink: '#d83bd2';
+  --color-brand-red: #f44250;
+  --color-brand-yellow: #fecc1b;
+  --color-brand-green: #6bd968;
+  --color-brand-aqua: #3defe9;
+  --color-brand-blue: #3992ff;
+  --color-brand-pink: #d83bd2;
 
   /* Fonts */
   --font-family-sans: var(--font-geist-sans), ui-sans-serif, system-ui,

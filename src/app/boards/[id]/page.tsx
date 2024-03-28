@@ -1,28 +1,12 @@
-import { Board } from '@/app/components/Board'
+import { getBoard } from '@/app/_data'
 import { currentUser } from '@/auth-helpers'
-import { db } from '@/db/client'
-import { unstable_cache } from 'next/cache'
-import { notFound } from 'next/navigation'
-
-const getBoard = unstable_cache(
-  async (userId: string, boardId: string) => {
-    const board = await db.query.Board.findFirst({
-      where: (fields, ops) =>
-        ops.and(
-          ops.eq(fields.ownerId, userId),
-          ops.eq(fields.publicId, boardId),
-        ),
-    })
-    if (!board) notFound()
-    return board
-  },
-  undefined,
-  { tags: ['board-details'] },
-)
+import { Board } from './board'
 
 export default async function BoardPage(props: { params: { id: string } }) {
   const user = await currentUser()
   const board = await getBoard(user.id, props.params.id)
+
+  console.log('board', board)
 
   return <Board board={board} />
 }

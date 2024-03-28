@@ -1,6 +1,15 @@
 import { customAlphabet } from 'nanoid'
 import { faker } from '@faker-js/faker'
 
+export const CONTENT_TYPES = {
+  card: 'application/remix-card',
+  column: 'application/remix-column',
+}
+export interface Transfer {
+  id?: string
+  title?: string
+}
+
 const pfx = 'Invariant failed'
 export function invariant<T>(
   condition: T,

@@ -5,8 +5,7 @@ import { createInsertSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
 export const User = sqliteTable('user', {
-  id: int('id').primaryKey({ autoIncrement: true }),
-  publicId: text('public_id').notNull(),
+  id: text('id').primaryKey(),
   name: text('name').notNull(),
   // email: text('email').notNull(),
   // hashedPassword: text('hashed_password').notNull(),
@@ -15,8 +14,7 @@ export const User = sqliteTable('user', {
 export const Board = sqliteTable(
   'board',
   {
-    id: int('id').primaryKey({ autoIncrement: true }),
-    publicId: text('public_id').notNull(),
+    id: text('id').primaryKey(),
     name: text('name').notNull(),
     color: text('color').notNull(),
     ownerId: text('owner_id').notNull(),
@@ -25,7 +23,7 @@ export const Board = sqliteTable(
     ownerIdx: index('board_owner_idx').on(table.ownerId),
   }),
 )
-export type BoardType = Omit<InferSelectModel<typeof Board>, 'id'>
+export type BoardType = InferSelectModel<typeof Board>
 export const createBoardSchema = createInsertSchema(Board, {
   color: z.string().regex(/^#[0-9a-f]{6}$/i),
 }).omit({
@@ -37,8 +35,7 @@ export const createBoardSchema = createInsertSchema(Board, {
 export const Column = sqliteTable(
   'column',
   {
-    id: int('id').primaryKey({ autoIncrement: true }),
-    publicId: text('public_id').notNull(),
+    id: text('id').primaryKey(),
     name: text('name').notNull(),
     order: int('order').notNull(),
     boardId: text('board_id').notNull(),
@@ -47,23 +44,34 @@ export const Column = sqliteTable(
     boardIdx: index('column_board_idx').on(table.boardId),
   }),
 )
+export type ColumnType = InferSelectModel<typeof Column>
+export const createColumnSchema = createInsertSchema(Column, {}).omit({
+  id: true,
+  publicId: true,
+  order: true,
+})
 
 export const Item = sqliteTable(
   'item',
   {
-    id: int('id').primaryKey({ autoIncrement: true }),
-    publicId: text('public_id').notNull(),
+    id: text('id').primaryKey(),
     title: text('title').notNull(),
     content: text('content'),
     order: int('order').notNull(),
     columnId: text('column_id').notNull(),
-    boardId: int('board_id').notNull(),
+    boardId: text('board_id').notNull(),
   },
   (table) => ({
     columnIdx: index('item_column_idx').on(table.columnId),
     boardIdx: index('item_board_idx').on(table.boardId),
   }),
 )
+export type ItemType = InferSelectModel<typeof Item>
+export const createItemSchema = createInsertSchema(Item, {}).omit({
+  id: true,
+  publicId: true,
+  order: true,
+})
 
 export const UserRelations = relations(User, ({ many }) => ({
   boards: many(Board),

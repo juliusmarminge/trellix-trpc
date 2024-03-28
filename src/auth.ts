@@ -49,7 +49,7 @@ export const {
         })
         if (user) {
           return {
-            id: user.publicId,
+            id: user.id,
             name: user.name,
           }
         }
@@ -57,12 +57,12 @@ export const {
         const [newUser] = await db
           .insert(User)
           .values({
-            publicId: genId('usr'),
+            id: genId('usr'),
             name: credentials.username,
           })
           .returning()
         return {
-          id: newUser.publicId,
+          id: newUser.id,
           name: newUser.name,
         }
       },

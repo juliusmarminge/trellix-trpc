@@ -13,7 +13,7 @@ const getBoards = unstable_cache(
     db.query.Board.findMany({
       where: (fields, ops) => ops.eq(fields.ownerId, userId),
       columns: {
-        publicId: true,
+        id: true,
         color: true,
         name: true,
       },
@@ -48,9 +48,9 @@ async function BoardList(props: { userId: string }) {
       {boards.length > 0 && (
         <ul className="flex flex-col gap-2">
           {boards.map((board) => (
-            <li key={board.publicId}>
+            <li key={board.id}>
               <Link
-                href={`/boards/${board.publicId}`}
+                href={`/boards/${board.id}`}
                 className="flex items-center gap-4 text-slate-200"
               >
                 <span

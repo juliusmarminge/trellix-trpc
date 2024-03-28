@@ -1,5 +1,6 @@
 {
   "eslint.experimental.useFlatConfig": true,
+  "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
