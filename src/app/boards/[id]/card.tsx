@@ -1,6 +1,5 @@
 import 'client-only'
 
-import { CancelButton, SaveButton } from '@/app/components/primitives'
 import { createItem, deleteItem, moveItem } from '@/app/_actions'
 import { useRef, forwardRef, useState } from 'react'
 import {
@@ -11,6 +10,7 @@ import {
   parseTransfer,
 } from '@/utils'
 import { Trash2Icon } from 'lucide-react'
+import { Button, TextArea } from '@radix-ui/themes'
 
 interface CardProps {
   title: string
@@ -126,7 +126,7 @@ export function NewCard({
 
   return (
     <form
-      className="border-t-2 border-b-2 border-transparent py-1 px-2"
+      className="flex flex-col gap-2 pt-1 px-2 pb-2"
       action={async (fd) => {
         invariant(textAreaRef.current)
         textAreaRef.current.value = ''
@@ -144,7 +144,7 @@ export function NewCard({
       <input type="hidden" name="columnId" value={columnId} />
       <input type="hidden" name="order" value={nextOrder} />
 
-      <textarea
+      <TextArea
         autoFocus
         required
         ref={textAreaRef}
@@ -167,8 +167,10 @@ export function NewCard({
         }}
       />
       <div className="flex justify-between">
-        <SaveButton ref={buttonRef}>Save Card</SaveButton>
-        <CancelButton onClick={onComplete}>Cancel</CancelButton>
+        <Button ref={buttonRef}>Save Card</Button>
+        <Button onClick={onComplete} color="gray">
+          Cancel
+        </Button>
       </div>
     </form>
   )

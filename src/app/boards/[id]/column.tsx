@@ -1,7 +1,7 @@
 import 'client-only'
 
 import { twMerge } from 'tailwind-merge'
-import { EditableText } from '@/app/components/primitives'
+import { EditableText } from '@/app/components/editable-text'
 import type { ItemType } from '@/db/schema'
 
 import { invariant, isCardTransfer, parseTransfer } from '@/utils'

@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Theme asChild>
+      <Theme asChild radius="full">
         <body
           className={[
             GeistSans.variable,

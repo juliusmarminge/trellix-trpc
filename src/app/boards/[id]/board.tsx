@@ -1,14 +1,15 @@
 'use client'
 
-import { useCallback, useOptimistic, useRef, useState } from 'react'
+import { useCallback, useOptimistic, useRef } from 'react'
 import { Column } from './column'
-import { EditableText } from '../../components/primitives'
+import { EditableText } from '../../components/editable-text'
 import { deleteBoard, updateBoardColor, updateBoardName } from '../../_actions'
 import type { BoardWithColumns } from '../../_data'
 import { NewColumn } from './new-column'
 import { ArrowLeft, PaletteIcon, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
 import Block from '@uiw/react-color-block'
+import { AlertDialog, Button, IconButton, Popover } from '@radix-ui/themes'
 
 export function Board({ board }: { board: BoardWithColumns }) {
   // scroll right when new columns are added
@@ -75,18 +76,12 @@ export function Board({ board }: { board: BoardWithColumns }) {
           }
         />
       </div>
-
-      {/* trolling you to add some extra margin to the right of the container with a whole dang div */}
-      <div data-lol className="flex-shrink-0 h-1 w-8" />
     </div>
   )
 }
 
 function BoardToolbar(props: { id: string; color: string; name: string }) {
   const { id, color, name } = props
-
-  // FIXME: Shouldn't need JS for this.
-  const [showPalette, setShowPalette] = useState(false)
 
   return (
     <div className="flex items-center justify-between gap-4">
@@ -108,33 +103,55 @@ function BoardToolbar(props: { id: string; color: string; name: string }) {
       </h1>
 
       <div className="flex items-center gap-4">
-        <div className="relative flex items-center">
-          {/* FIXME: Solve this with vanilla HTML/CSS */}
-          <button onClick={() => setShowPalette((c) => !c)}>
-            <PaletteIcon className="size-8" />
-          </button>
-          <Block
-            className={`absolute! top-10 right-0 ${showPalette ? 'block' : 'hidden'}`}
-            color={color}
-            onChange={async (color) => {
-              await updateBoardColor({
-                boardId: id,
-                newColor: color.hex,
-              })
-            }}
-          />
-        </div>
+        <Popover.Root>
+          <Popover.Trigger>
+            <IconButton variant="ghost">
+              <PaletteIcon className="size-6 stroke-slate-900" />
+            </IconButton>
+          </Popover.Trigger>
+          <Popover.Content>
+            <Block
+              color={color}
+              onChange={async (color) => {
+                await updateBoardColor({
+                  boardId: id,
+                  newColor: color.hex,
+                })
+              }}
+            />
+          </Popover.Content>
+        </Popover.Root>
 
-        <form action={deleteBoard as any}>
-          <input type="hidden" name="boardId" value={id} />
-          <button
-            type="submit"
-            className="flex items-center gap-2 rounded-full bg-slate-900 py-2 px-4 text-sm text-slate-200 transition-colors hover:bg-slate-800"
-          >
-            <Trash2Icon className="size-4" />
-            Delete board
-          </button>
-        </form>
+        <AlertDialog.Root>
+          <AlertDialog.Trigger>
+            <IconButton variant="ghost">
+              <Trash2Icon className="size-6 stroke-slate-900" />
+            </IconButton>
+          </AlertDialog.Trigger>
+          <AlertDialog.Content maxWidth="450px">
+            <AlertDialog.Title>Delete board</AlertDialog.Title>
+            <AlertDialog.Description size="2">
+              Are you sure? The board and all of it's content will be deleted
+              permanently. This action cannot be undone.
+            </AlertDialog.Description>
+
+            <div className="mt-4 flex justify-end gap-4">
+              <AlertDialog.Cancel>
+                <Button variant="soft" color="gray">
+                  Cancel
+                </Button>
+              </AlertDialog.Cancel>
+              <form action={deleteBoard as any}>
+                <input type="hidden" name="boardId" value={id} />
+                <AlertDialog.Action>
+                  <Button type="submit" variant="solid" color="red">
+                    Delete board
+                  </Button>
+                </AlertDialog.Action>
+              </form>
+            </div>
+          </AlertDialog.Content>
+        </AlertDialog.Root>
       </div>
     </div>
   )

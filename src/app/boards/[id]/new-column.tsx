@@ -1,10 +1,10 @@
 import 'client-only'
 import { useState, useRef } from 'react'
 
-import { CancelButton, SaveButton } from '@/app/components/primitives'
 import { genId, invariant } from '@/utils'
 import { PlusIcon } from 'lucide-react'
 import { createColumn } from '@/app/_actions'
+import { Button } from '@radix-ui/themes'
 
 export function NewColumn({
   boardId,
@@ -47,8 +47,10 @@ export function NewColumn({
         className="w-full rounded-lg border border-slate-400 py-1 px-2 font-medium text-black"
       />
       <div className="flex justify-between">
-        <SaveButton>Save Column</SaveButton>
-        <CancelButton onClick={() => setEditing(false)}>Cancel</CancelButton>
+        <Button>Save Column</Button>
+        <Button color="gray" onClick={() => setEditing(false)}>
+          Cancel
+        </Button>
       </div>
     </form>
   ) : (

@@ -1,40 +1,7 @@
 import 'client-only'
 
-import { forwardRef, useOptimistic, useRef, useState } from 'react'
+import { useOptimistic, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-
-export const SaveButton = forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->((props, ref) => {
-  return (
-    <button
-      ref={ref}
-      // this makes it so the button takes focus on clicks in safari I can't
-      // remember if this is the proper workaround or not, it's been a while!
-      // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#clicking_and_focus
-      // https://bugs.webkit.org/show_bug.cgi?id=22261
-      tabIndex={0}
-      {...props}
-      className="bg-brand-blue rounded-lg p-2 text-left text-sm font-medium text-white"
-    />
-  )
-})
-
-export const CancelButton = forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->((props, ref) => {
-  return (
-    <button
-      ref={ref}
-      type="button"
-      tabIndex={0}
-      {...props}
-      className="rounded-lg p-2 text-left text-sm font-medium hover:bg-slate-200 focus:bg-slate-200"
-    />
-  )
-})
 
 export function EditableText(props: {
   onSubmit: (str: string) => void
