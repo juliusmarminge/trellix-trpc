@@ -1,6 +1,7 @@
 import type { DefaultSession } from 'next-auth'
 import NextAuth from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import Credentials from 'next-auth/providers/credentials'
+import Github from 'next-auth/providers/github'
 
 declare module 'next-auth' {
   interface Session {
@@ -17,7 +18,8 @@ export const {
   signOut,
 } = NextAuth({
   providers: [
-    CredentialsProvider({
+    Github,
+    Credentials({
       // The name to display on the sign in form (e.g. "Sign in with...")
       name: 'Credentials',
       // `credentials` is used to generate a form on the sign in page.
