@@ -67,7 +67,8 @@ export const deleteBoard = protectedBoardAction
     ])
 
     revalidateTag('user_boards')
-    revalidateTag('board_details')
+    revalidatePath(`/boards/${input.boardId}`)
+    // revalidateTag('board_details')
     return redirect('/')
   })
 
@@ -81,7 +82,8 @@ export const updateBoardName = protectedBoardAction
       })
       .where(eq(Board.id, input.boardId))
 
-    revalidateTag('board_details')
+    revalidatePath(`/boards/${input.boardId}`)
+    // revalidateTag('board_details')
     revalidateTag('user_boards')
   })
 
@@ -95,7 +97,8 @@ export const updateBoardColor = protectedBoardAction
       })
       .where(eq(Board.id, input.boardId))
 
-    revalidateTag('board_details')
+    revalidatePath(`/boards/${input.boardId}`)
+    // revalidateTag('board_details')
     revalidateTag('user_boards')
   })
 
@@ -117,7 +120,8 @@ export const createColumn = protectedBoardAction
         order: order + 1,
       })
 
-      revalidateTag('board_details')
+      revalidatePath(`/boards/${input.boardId}`)
+      // revalidateTag('board_details')
       return { ok: true as const }
     } catch (err) {
       console.error('Error creating column', err)
@@ -135,7 +139,8 @@ export const updateColumnName = protectedBoardAction
       })
       .where(eq(Column.id, input.columnId))
 
-    revalidateTag('board_details')
+    revalidatePath(`/boards/${input.boardId}`)
+    // revalidateTag('board_details')
   })
 
 export const deleteColumn = protectedBoardAction
@@ -147,7 +152,8 @@ export const deleteColumn = protectedBoardAction
         db.delete(Column).where(eq(Column.id, input.columnId)),
       ])
 
-      revalidateTag('board_details')
+      revalidatePath(`/boards/${input.boardId}`)
+      // revalidateTag('board_details')
       return { ok: true as const }
     } catch (err) {
       console.error('Error deleting column', err)
@@ -167,7 +173,8 @@ export const createItem = protectedBoardAction
         title: input.title,
       })
 
-      revalidateTag('board_details')
+      revalidatePath(`/boards/${input.boardId}`)
+      // revalidateTag('board_details')
       return { ok: true as const }
     } catch (err) {
       console.error('Error creating item', err)
@@ -186,7 +193,8 @@ export const moveItem = protectedBoardAction
       })
       .where(eq(Item.id, input.id))
 
-    revalidateTag('board_details')
+    revalidatePath(`/boards/${input.boardId}`)
+    // revalidateTag('board_details')
   })
 
 export const deleteItem = protectedBoardAction
@@ -194,7 +202,8 @@ export const deleteItem = protectedBoardAction
   .mutation(async ({ input }) => {
     await db.delete(Item).where(eq(Item.id, input.id))
 
-    revalidateTag('board_details')
+    revalidatePath(`/boards/${input.boardId}`)
+    // revalidateTag('board_details')
   })
 
 export async function signInWithCredentials(
