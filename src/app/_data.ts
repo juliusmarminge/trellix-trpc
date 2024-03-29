@@ -2,6 +2,10 @@ import { db } from '@/db/client'
 import { and, asc, eq } from 'drizzle-orm'
 import { unstable_cache } from 'next/cache'
 
+/**
+ * These seems to be some issue when caching this function and optimistically updating
+ * the frontend. Let's just keep it uncached for now...
+ */
 // export const getBoardWithItems = unstable_cache(
 //   async (userId: string, boardId: string) => {
 //     const board = await db.query.Board.findFirst({
