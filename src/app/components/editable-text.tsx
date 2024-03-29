@@ -1,9 +1,8 @@
 import 'client-only'
-
 import { useOptimistic, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 
-export function EditableText(props: {
+interface EditableTextProps {
   onSubmit: (str: string) => void
   children: React.ReactNode
   fieldName: string
@@ -12,7 +11,9 @@ export function EditableText(props: {
   inputLabel: string
   buttonClassName: string
   buttonLabel: string
-}) {
+}
+
+export function EditableText(props: EditableTextProps) {
   const [value, updateValue] = useOptimistic(
     props.value,
     (_, next: string) => next,

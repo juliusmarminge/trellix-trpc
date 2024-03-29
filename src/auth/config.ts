@@ -1,5 +1,5 @@
-import type { DefaultSession, NextAuthConfig } from 'next-auth'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
+import type { DefaultSession, NextAuthConfig } from 'next-auth'
 import { db } from '../db/client'
 
 declare module 'next-auth' {

@@ -1,11 +1,11 @@
 import 'server-only'
 import { initTRPC, TRPCError } from '@trpc/server'
 import { experimental_nextAppDirCaller } from '@trpc/server/adapters/next-app-dir'
+import { unstable_cache } from 'next/cache'
 import { cache } from 'react'
+import { z } from 'zod'
 import { auth } from './auth'
 import { db } from './db/client'
-import { z } from 'zod'
-import { unstable_cache } from 'next/cache'
 
 export { experimental_redirect as redirect } from '@trpc/server/adapters/next-app-dir'
 
@@ -68,7 +68,6 @@ export const protectedBoardAction = protectedAction
 
     return opts.next({
       ctx: {
-        user: opts.ctx.user,
         board,
       },
     })

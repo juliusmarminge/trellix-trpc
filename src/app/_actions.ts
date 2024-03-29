@@ -1,21 +1,21 @@
 'use server'
 
+import { currentUser, signIn } from '@/auth'
 import { db } from '@/db/client'
-import { z } from 'zod'
-import { protectedAction, protectedBoardAction, redirect } from '@/trpc'
-import { revalidatePath, revalidateTag } from 'next/cache'
 import {
   Board,
   Column,
-  Item,
   createBoardSchema,
   createColumnSchema,
   createItemSchema,
+  Item,
 } from '@/db/schema'
+import { protectedAction, protectedBoardAction, redirect } from '@/trpc'
 import { genId } from '@/utils'
 import { and, count, eq } from 'drizzle-orm'
-import { currentUser, signIn } from '@/auth'
 import { AuthError } from 'next-auth'
+import { revalidatePath, revalidateTag } from 'next/cache'
+import { z } from 'zod'
 
 /**
  * Temporary little type hack to cast a trpc action
@@ -57,20 +57,18 @@ export const createBoard = protectedAction
     return redirect(`/boards/${id}`)
   })
 
-export const deleteBoard = protectedBoardAction
-  .input(z.object({ boardId: z.string() }))
-  .mutation(async ({ input }) => {
-    await Promise.all([
-      db.delete(Item).where(eq(Item.boardId, input.boardId)),
-      db.delete(Column).where(eq(Column.boardId, input.boardId)),
-      db.delete(Board).where(eq(Board.id, input.boardId)),
-    ])
+export const deleteBoard = protectedBoardAction.mutation(async ({ input }) => {
+  await Promise.all([
+    db.delete(Item).where(eq(Item.boardId, input.boardId)),
+    db.delete(Column).where(eq(Column.boardId, input.boardId)),
+    db.delete(Board).where(eq(Board.id, input.boardId)),
+  ])
 
-    revalidateTag('user_boards')
-    revalidatePath(`/boards/${input.boardId}`)
-    // revalidateTag('board_details')
-    return redirect('/')
-  })
+  revalidateTag('user_boards')
+  revalidatePath(`/boards/${input.boardId}`)
+  // revalidateTag('board_details')
+  return redirect('/')
+})
 
 export const updateBoardName = protectedBoardAction
   .input(z.object({ newName: z.string() }))

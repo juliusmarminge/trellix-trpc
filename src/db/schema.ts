@@ -2,12 +2,13 @@ import type { InferSelectModel } from 'drizzle-orm'
 import { relations } from 'drizzle-orm'
 import {
   index,
-  sqliteTable,
-  text,
   integer,
   primaryKey,
+  sqliteTable,
+  text,
 } from 'drizzle-orm/sqlite-core'
 import { createInsertSchema } from 'drizzle-zod'
+import type { AdapterAccount } from 'next-auth/adapters'
 import { z } from 'zod'
 
 export const User = sqliteTable('user', {
@@ -18,6 +19,30 @@ export const User = sqliteTable('user', {
   emailVerified: integer('emailVerified', { mode: 'timestamp_ms' }),
   image: text('image'),
 })
+
+export const Account = sqliteTable(
+  'account',
+  {
+    userId: text('userId')
+      .notNull()
+      .references(() => User.id, { onDelete: 'cascade' }),
+    type: text('type').$type<AdapterAccount['type']>().notNull(),
+    provider: text('provider').notNull(),
+    providerAccountId: text('providerAccountId').notNull(),
+    refresh_token: text('refresh_token'),
+    access_token: text('access_token'),
+    expires_at: integer('expires_at'),
+    token_type: text('token_type'),
+    scope: text('scope'),
+    id_token: text('id_token'),
+    session_state: text('session_state'),
+  },
+  (account) => ({
+    compoundKey: primaryKey({
+      columns: [account.provider, account.providerAccountId],
+    }),
+  }),
+)
 
 export const Board = sqliteTable(
   'board',
@@ -84,6 +109,10 @@ export const UserRelations = relations(User, ({ many }) => ({
   accounts: many(Account),
 }))
 
+export const AccountRelations = relations(Account, ({ one }) => ({
+  user: one(User, { fields: [Account.userId], references: [User.id] }),
+}))
+
 export const BoardRelations = relations(Board, ({ many, one }) => ({
   owner: one(User, { fields: [Board.ownerId], references: [User.id] }),
   columns: many(Column),
@@ -98,35 +127,4 @@ export const ColumnRelations = relations(Column, ({ many, one }) => ({
 export const ItemRelations = relations(Item, ({ one }) => ({
   column: one(Column, { fields: [Item.columnId], references: [Column.id] }),
   board: one(Board, { fields: [Item.boardId], references: [Board.id] }),
-}))
-
-/** NextAuth */
-import type { AdapterAccount } from 'next-auth/adapters'
-
-export const Account = sqliteTable(
-  'account',
-  {
-    userId: text('userId')
-      .notNull()
-      .references(() => User.id, { onDelete: 'cascade' }),
-    type: text('type').$type<AdapterAccount['type']>().notNull(),
-    provider: text('provider').notNull(),
-    providerAccountId: text('providerAccountId').notNull(),
-    refresh_token: text('refresh_token'),
-    access_token: text('access_token'),
-    expires_at: integer('expires_at'),
-    token_type: text('token_type'),
-    scope: text('scope'),
-    id_token: text('id_token'),
-    session_state: text('session_state'),
-  },
-  (account) => ({
-    compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId],
-    }),
-  }),
-)
-
-export const AccountRelations = relations(Account, ({ one }) => ({
-  user: one(User, { fields: [Account.userId], references: [User.id] }),
 }))

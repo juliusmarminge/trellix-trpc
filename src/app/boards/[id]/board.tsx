@@ -1,14 +1,14 @@
 'use client'
 
-import { useCallback, useOptimistic, useRef } from 'react'
-import { Column, NewColumn } from './column'
-import { EditableText } from '../../components/editable-text'
-import { deleteBoard, updateBoardColor, updateBoardName } from '../../_actions'
-import type { BoardWithColumns } from '../../_data'
+import { AlertDialog, Button, IconButton, Popover } from '@radix-ui/themes'
+import Block from '@uiw/react-color-block'
 import { ArrowLeft, PaletteIcon, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
-import Block from '@uiw/react-color-block'
-import { AlertDialog, Button, IconButton, Popover } from '@radix-ui/themes'
+import { useCallback, useOptimistic, useRef } from 'react'
+import { deleteBoard, updateBoardColor, updateBoardName } from '../../_actions'
+import type { BoardWithColumns } from '../../_data'
+import { EditableText } from '../../components/editable-text'
+import { Column, NewColumn } from './column'
 
 export function Board({ board }: { board: BoardWithColumns }) {
   // scroll right when new columns are added

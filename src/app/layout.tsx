@@ -1,10 +1,10 @@
-import type { Metadata } from 'next'
+import { Theme } from '@radix-ui/themes'
 import { GeistSans } from 'geist/font/sans'
-import { Toaster } from 'sonner'
 import { Github } from 'lucide-react'
+import type { Metadata } from 'next'
+import { Toaster } from 'sonner'
 import './globals.css'
 import '@radix-ui/themes/styles.css'
-import { Theme } from '@radix-ui/themes'
 
 export const metadata: Metadata = {
   title: 'Create Next App',

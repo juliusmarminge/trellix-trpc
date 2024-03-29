@@ -1,5 +1,5 @@
-import { customAlphabet } from 'nanoid'
 import { faker } from '@faker-js/faker'
+import { customAlphabet } from 'nanoid'
 import { z } from 'zod'
 
 const CONTENT_TYPE = 'application/remix-card'

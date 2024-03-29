@@ -1,5 +1,5 @@
-import createJiti from 'jiti'
 import { fileURLToPath } from 'node:url'
+import createJiti from 'jiti'
 
 createJiti(fileURLToPath(import.meta.url))('./src/env.ts')
 

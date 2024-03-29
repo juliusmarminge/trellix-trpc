@@ -1,11 +1,9 @@
 import { getBoardWithItems } from '@/app/_data'
-import { currentUser } from '@/auth'
-import { Board } from './board'
 import Link from 'next/link'
+import { Board } from './board'
 
 export default async function BoardPage(props: { params: { id: string } }) {
-  const user = await currentUser()
-  const board = await getBoardWithItems(user.id, props.params.id)
+  const board = await getBoardWithItems(props.params.id)
 
   if (!board) {
     return (

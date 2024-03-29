@@ -1,13 +1,10 @@
-import { Suspense } from 'react'
-import { SignedIn, SignedOut } from '@/auth'
-
-import { signOut } from '@/auth'
-import { BoardList } from './components/board-list'
-
+import { SignedIn, SignedOut, signOut } from '@/auth'
 import { env } from '@/env'
-import { Columns4 } from 'lucide-react'
-import { SignInForm, SubmitButton } from './components/sign-in'
 import { Spinner } from '@radix-ui/themes'
+import { Columns4 } from 'lucide-react'
+import { Suspense } from 'react'
+import { BoardList } from './components/board-list'
+import { SignInForm, SubmitButton } from './components/sign-in'
 
 export default async function Home() {
   return (
@@ -32,7 +29,7 @@ export default async function Home() {
                 </span>
               </div>
               <Suspense fallback={<BoardList.Loading />}>
-                <BoardList userId={user.id} />
+                <BoardList />
               </Suspense>
 
               <div className="flex flex-col gap-2">

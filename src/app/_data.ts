@@ -1,3 +1,4 @@
+import { currentUser } from '@/auth'
 import { db } from '@/db/client'
 import { and, asc, eq } from 'drizzle-orm'
 import { unstable_cache } from 'next/cache'
@@ -31,7 +32,8 @@ import { unstable_cache } from 'next/cache'
 //   undefined,
 //   { tags: ['board_details'] },
 // )
-export const getBoardWithItems = async (userId: string, boardId: string) => {
+export const getBoardWithItems = async (boardId: string) => {
+  const { id: userId } = await currentUser()
   const board = await db.query.Board.findFirst({
     with: {
       columns: {
@@ -55,18 +57,21 @@ export type BoardWithColumns = NonNullable<
   Awaited<ReturnType<typeof getBoardWithItems>>
 >
 
-export const getBoards = unstable_cache(
-  async (userId: string) => {
-    const boards = await db.query.Board.findMany({
-      where: (fields, ops) => ops.eq(fields.ownerId, userId),
-      columns: {
-        id: true,
-        color: true,
-        name: true,
-      },
-    })
-    return boards
-  },
-  undefined,
-  { tags: ['user_boards'] },
-)
+export const getUserBoards = async () => {
+  const { id: userId } = await currentUser()
+  return unstable_cache(
+    async (userId: string) => {
+      const boards = await db.query.Board.findMany({
+        where: (fields, ops) => ops.eq(fields.ownerId, userId),
+        columns: {
+          id: true,
+          color: true,
+          name: true,
+        },
+      })
+      return boards
+    },
+    undefined,
+    { tags: ['user_boards'] },
+  )(userId)
+}

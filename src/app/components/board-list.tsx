@@ -1,13 +1,13 @@
 import { genRandomName } from '@/utils'
-import { createBoard } from '../_actions'
-import { getBoards } from '../_data'
 import { faker } from '@faker-js/faker'
+import { Skeleton } from '@radix-ui/themes'
 import { PlusIcon } from 'lucide-react'
 import Link from 'next/link'
-import { Skeleton } from '@radix-ui/themes'
+import { createBoard } from '../_actions'
+import { getUserBoards } from '../_data'
 
-export async function BoardList(props: { userId: string }) {
-  const boards = await getBoards(props.userId)
+export async function BoardList() {
+  const boards = await getUserBoards()
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">

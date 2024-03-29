@@ -36,6 +36,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
     "@tailwindcss/postcss": "4.0.0-alpha.11",
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.73",
@@ -53,6 +54,7 @@
     "semi": false,
     "singleQuote": true,
     "plugins": [
+      "@ianvs/prettier-plugin-sort-imports",
       "prettier-plugin-tailwindcss"
     ]
   }

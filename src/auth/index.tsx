@@ -1,18 +1,16 @@
 import 'server-only'
-
+import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
 import NextAuth from 'next-auth'
+import type { Session } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import Github from 'next-auth/providers/github'
-import { db } from '../db/client'
+import { redirect } from 'next/navigation'
+import { cache } from 'react'
 import { z } from 'zod'
+import { db } from '../db/client'
 import { User } from '../db/schema'
 import { genId } from '../utils'
 import { authConfig } from './config'
-import { cache } from 'react'
-
-import { redirect } from 'next/navigation'
-import type { Session } from 'next-auth'
-import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
 
 async function hash(password: string) {
   return new Promise<string>((resolve, reject) => {

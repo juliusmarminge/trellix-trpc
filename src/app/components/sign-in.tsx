@@ -32,7 +32,6 @@ export function SignInForm(props: { githubEnabled: boolean }) {
           <span className="text-sm font-medium text-slate-200">Name</span>
           <input
             name="username"
-            autoComplete="off"
             required
             className="rounded-full border-slate-700 bg-gray-800 py-2 px-4 text-sm text-slate-200"
             placeholder="John Doe"
@@ -42,7 +41,6 @@ export function SignInForm(props: { githubEnabled: boolean }) {
           <span className="text-sm font-medium text-slate-200">Pasword</span>
           <input
             name="password"
-            autoComplete="off"
             required
             className="rounded-full border-slate-700 bg-gray-800 py-2 px-4 text-sm text-slate-200"
             placeholder="**********"
@@ -82,7 +80,7 @@ export function SubmitButton(props: {
   return (
     <button
       type="submit"
-      className="flex w-full items-center justify-center gap-2 rounded-full border border-slate-700 bg-slate-900/80 py-2 px-4 text-sm text-slate-200 transition-colors hover:border-slate-500 disabled:pointer-events-none disabled:opacity-50"
+      className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-slate-700 bg-slate-900/80 py-2 px-4 text-sm text-slate-200 transition-colors hover:border-slate-500 disabled:pointer-events-none disabled:opacity-50"
       disabled={props.disabled === true || pending}
     >
       {props.icon ? (
