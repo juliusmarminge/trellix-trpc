@@ -8,7 +8,7 @@ export const User = sqliteTable('user', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   // email: text('email').notNull(),
-  // hashedPassword: text('hashed_password').notNull(),
+  hashedPassword: text('hashed_password').notNull(),
 })
 
 export const Board = sqliteTable(

@@ -1,5 +1,5 @@
 import { getBoardWithItems } from '@/app/_data'
-import { currentUser } from '@/auth-helpers'
+import { currentUser } from '@/auth'
 import { Board } from './board'
 import Link from 'next/link'
 
