@@ -4,7 +4,8 @@ import { Spinner } from '@radix-ui/themes'
 import { Columns4 } from 'lucide-react'
 import { Suspense } from 'react'
 import { BoardList } from './components/board-list'
-import { SignInForm, SubmitButton } from './components/sign-in'
+import { SignInForm } from './components/sign-in'
+import { SubmitButton } from './components/submit-button'
 
 export default async function Home() {
   return (
