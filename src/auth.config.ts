@@ -20,12 +20,6 @@ export const authConfig = {
   providers: [],
   pages: { signIn: '/' },
   callbacks: {
-    // jwt: async ({ token, user }) => {
-    //   if (user) {
-    //     token.sub = user.id
-    //   }
-    //   return token
-    // },
     session: async ({ session, token }) => {
       if (token?.sub) {
         session.user.id = token.sub
