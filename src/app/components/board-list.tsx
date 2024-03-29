@@ -1,10 +1,9 @@
 import { genRandomName } from '@/utils'
-import { faker } from '@faker-js/faker'
 import { Skeleton } from '@radix-ui/themes'
 import { PlusIcon } from 'lucide-react'
 import Link from 'next/link'
-import { createBoard } from '../_actions'
 import { getUserBoards } from '../_data'
+import { CreateBoard } from './create-board'
 
 export async function BoardList() {
   const boards = await getUserBoards()
@@ -12,16 +11,7 @@ export async function BoardList() {
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <span className="text-sm font-bold text-slate-200">Your boards</span>
-        <form action={createBoard as any}>
-          <input type="hidden" name="name" value={genRandomName()} />
-          <input type="hidden" name="color" value={faker.color.rgb()} />
-          <button
-            type="submit"
-            className="rounded-full border border-slate-700 bg-slate-900/80 p-2 text-sm text-slate-200 transition-colors hover:border-slate-500"
-          >
-            <PlusIcon className="size-4" />
-          </button>
-        </form>
+        <CreateBoard />
       </div>
       {boards.length === 0 && (
         <span className="text-sm text-slate-500">No boards yet</span>

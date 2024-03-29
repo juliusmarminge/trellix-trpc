@@ -6,7 +6,7 @@ A Trellix clone made with the most bleeding edge Next.js features and some new a
 
 ## Setup
 
-You need a Turso database to run this project. You can create one for free at [turso.dev](https://turso.dev). Then, get the URL and Access Token from the Turso dashboard and add them to your `.env.local` file:
+You need a Turso database to run this project. You can create one for free at [turso.tech](https://turso.tech). Then, get the URL and Access Token from the Turso dashboard and add them to your `.env.local` file:
 
 ```bash
 TURSO_URL=libsql://your-database.turso.io
