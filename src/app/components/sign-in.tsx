@@ -1,6 +1,7 @@
 'use client'
 
 import { signInWithCredentials, signInWithGithub } from '@/app/_actions'
+import { Spinner } from '@radix-ui/themes'
 import { Columns4, Github } from 'lucide-react'
 import { useEffect } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
@@ -82,7 +83,9 @@ function LoginButton() {
       className="rounded-full border border-slate-700 bg-slate-900/80 py-2 px-4 text-sm text-slate-200 transition-colors hover:border-slate-500 disabled:pointer-events-none disabled:opacity-50"
       disabled={pending}
     >
-      Sign in
+      <Spinner loading={pending} size="2">
+        Sign in
+      </Spinner>
     </button>
   )
 }

@@ -24,10 +24,10 @@ export default async function Home() {
       >
         <SignedIn>
           {({ user }) => (
-            <div className="flex min-h-96 w-full max-w-sm flex-col gap-8 place-self-center rounded-2xl bg-slate-900 p-8 shadow-lg">
+            <div className="flex h-max min-h-[437px] w-full max-w-sm flex-col gap-8 place-self-center rounded-2xl bg-slate-900 p-8 shadow-lg">
               <div className="flex flex-col items-center justify-center gap-2">
                 <Columns4 className="size-6 stroke-slate-200" />
-                <span className="text-lg font-bold text-slate-200">
+                <span className="text-center text-lg font-bold text-slate-200">
                   Welcome back, {user.name}
                 </span>
               </div>
