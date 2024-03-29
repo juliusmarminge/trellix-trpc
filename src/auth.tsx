@@ -60,6 +60,7 @@ const {
               ops.sql`${fields.name} = ${credentials.data.username} COLLATE NOCASE`,
           })
           if (user) {
+            if (!user.hashedPassword) return null
             const pwMatch = await compare(
               credentials.data.password,
               user.hashedPassword,

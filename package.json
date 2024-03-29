@@ -12,6 +12,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^0.8.1",
     "@faker-js/faker": "^8.4.1",
     "@libsql/client": "^0.6.0",
     "@radix-ui/themes": "^3.0.1",
