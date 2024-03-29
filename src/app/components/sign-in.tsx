@@ -61,31 +61,46 @@ export function SignInForm(props: { githubEnabled: boolean }) {
       </div>
 
       <form action={signInWithGithub}>
-        <button
-          type="submit"
-          className="flex w-full items-center justify-center gap-2 rounded-full border border-slate-700 bg-slate-900/80 py-2 px-4 text-sm text-slate-200 transition-colors hover:border-slate-500 disabled:pointer-events-none disabled:opacity-50"
+        <SubmitButton
           disabled={!props.githubEnabled}
+          icon={<Github className="size-4" />}
         >
-          <Github className="size-4" />
-          <span>Continue with GitHub</span>
-        </button>
+          Sign in with GitHub
+        </SubmitButton>
       </form>
     </div>
   )
 }
 
-export function SubmitButton(props: { children: React.ReactNode }) {
+export function SubmitButton(props: {
+  disabled?: boolean
+  icon?: React.ReactNode
+  children: string
+}) {
   const { pending } = useFormStatus()
 
   return (
     <button
       type="submit"
-      className="w-full rounded-full border border-slate-700 bg-slate-900/80 py-2 px-4 text-sm text-slate-200 transition-colors hover:border-slate-500 disabled:pointer-events-none disabled:opacity-50"
-      disabled={pending}
+      className="flex w-full items-center justify-center gap-2 rounded-full border border-slate-700 bg-slate-900/80 py-2 px-4 text-sm text-slate-200 transition-colors hover:border-slate-500 disabled:pointer-events-none disabled:opacity-50"
+      disabled={props.disabled === true || pending}
     >
-      <Spinner loading={pending} size="2">
-        {props.children}
-      </Spinner>
+      {props.icon ? (
+        <>
+          <Spinner loading={pending} size="2">
+            {props.icon}
+          </Spinner>
+          {typeof props.children === 'string' ? (
+            <span>{props.children}</span>
+          ) : (
+            props.children
+          )}
+        </>
+      ) : (
+        <Spinner loading={pending} size="2">
+          {props.children}
+        </Spinner>
+      )}
     </button>
   )
 }
