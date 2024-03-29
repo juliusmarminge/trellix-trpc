@@ -12,7 +12,27 @@ import { cache } from 'react'
 
 import { redirect } from 'next/navigation'
 import type { Session } from 'next-auth'
-import { compare, hash } from 'bcrypt'
+import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
+
+async function hash(password: string) {
+  return new Promise<string>((resolve, reject) => {
+    const salt = randomBytes(16).toString('hex')
+    scrypt(password, salt, 64, (err, derivedKey) => {
+      if (err) reject(err)
+      resolve(`${salt}.${derivedKey.toString('hex')}`)
+    })
+  })
+}
+
+async function compare(password: string, hash: string) {
+  return new Promise<boolean>((resolve, reject) => {
+    const [salt, hashKey] = hash.split('.')
+    scrypt(password, salt, 64, (err, derivedKey) => {
+      if (err) reject(err)
+      resolve(timingSafeEqual(Buffer.from(hashKey, 'hex'), derivedKey))
+    })
+  })
+}
 
 const {
   auth: uncachedAuth,
@@ -54,7 +74,7 @@ const {
             .values({
               id: genId('usr'),
               name: credentials.data.username,
-              hashedPassword: await hash(credentials.data.password, 10),
+              hashedPassword: await hash(credentials.data.password),
             })
             .returning()
           return { id: newUser.id, name: newUser.name }
