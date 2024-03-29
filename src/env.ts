@@ -10,4 +10,5 @@ export const env = createEnv({
     TURSO_AUTH_TOKEN: z.string(),
   },
   experimental__runtimeEnv: {},
+  emptyStringAsUndefined: true,
 })

@@ -81,6 +81,7 @@ export const createItemSchema = createInsertSchema(Item, {
 
 export const UserRelations = relations(User, ({ many }) => ({
   boards: many(Board),
+  accounts: many(Account),
 }))
 
 export const BoardRelations = relations(Board, ({ many, one }) => ({
@@ -125,3 +126,7 @@ export const Account = sqliteTable(
     }),
   }),
 )
+
+export const AccountRelations = relations(Account, ({ one }) => ({
+  user: one(User, { fields: [Account.userId], references: [User.id] }),
+}))

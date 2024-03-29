@@ -1,6 +1,7 @@
 import type { DefaultSession, NextAuthConfig } from 'next-auth'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
-import { db } from './db/client'
+import { db } from '../db/client'
+
 declare module 'next-auth' {
   interface Session {
     user: DefaultSession['user'] & {

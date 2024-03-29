@@ -1,5 +1,5 @@
 import NextAuth from 'next-auth'
-import { authConfig } from './auth.config'
+import { authConfig } from './auth/config'
 import type { MiddlewareConfig } from 'next/server'
 
 export default NextAuth(authConfig).auth
