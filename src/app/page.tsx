@@ -14,9 +14,12 @@ export default async function Home() {
     <main className="grid h-full grow">
       <Suspense
         fallback={
-          <Spinner size="3">
+          <div className="relative h-max w-full max-w-sm place-self-center">
+            <div className=" absolute inset-0 z-40  grid rounded-2xl bg-slate-900 text-white">
+              <Spinner size="3" className="z-50 place-self-center" />
+            </div>
             <SignInForm githubEnabled={false} />
-          </Spinner>
+          </div>
         }
       >
         <SignedIn>
