@@ -51,7 +51,7 @@ export function SignInForm(props: { githubEnabled: boolean }) {
           />
         </label>
 
-        <LoginButton />
+        <SubmitButton>Sign in</SubmitButton>
       </form>
 
       <div className="relative h-px w-full bg-slate-700">
@@ -74,17 +74,17 @@ export function SignInForm(props: { githubEnabled: boolean }) {
   )
 }
 
-function LoginButton() {
+export function SubmitButton(props: { children: React.ReactNode }) {
   const { pending } = useFormStatus()
 
   return (
     <button
       type="submit"
-      className="rounded-full border border-slate-700 bg-slate-900/80 py-2 px-4 text-sm text-slate-200 transition-colors hover:border-slate-500 disabled:pointer-events-none disabled:opacity-50"
+      className="w-full rounded-full border border-slate-700 bg-slate-900/80 py-2 px-4 text-sm text-slate-200 transition-colors hover:border-slate-500 disabled:pointer-events-none disabled:opacity-50"
       disabled={pending}
     >
       <Spinner loading={pending} size="2">
-        Sign in
+        {props.children}
       </Spinner>
     </button>
   )

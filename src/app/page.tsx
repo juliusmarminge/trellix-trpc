@@ -6,7 +6,7 @@ import { BoardList } from './components/board-list'
 
 import { env } from '@/env'
 import { Columns4 } from 'lucide-react'
-import { SignInForm } from './components/sign-in'
+import { SignInForm, SubmitButton } from './components/sign-in'
 import { Spinner } from '@radix-ui/themes'
 
 export default async function Home() {
@@ -42,12 +42,7 @@ export default async function Home() {
                     await signOut()
                   }}
                 >
-                  <button
-                    type="submit"
-                    className="w-full rounded-full border border-slate-700 bg-slate-900/80 py-2 px-4 text-sm text-slate-200 transition-colors hover:border-slate-500"
-                  >
-                    Sign out
-                  </button>
+                  <SubmitButton>Sign out</SubmitButton>
                 </form>
               </div>
             </div>
