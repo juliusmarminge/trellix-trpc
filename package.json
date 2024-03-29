@@ -50,6 +50,9 @@
     "typescript": "^5.4.3",
     "typescript-eslint": "^7.4.0"
   },
+  "trustedDependencies": [
+    "bcrypt"
+  ],
   "prettier": {
     "semi": false,
     "singleQuote": true,
