@@ -1,11 +1,10 @@
 'use client'
 
 import { useCallback, useOptimistic, useRef } from 'react'
-import { Column } from './column'
+import { Column, NewColumn } from './column'
 import { EditableText } from '../../components/editable-text'
 import { deleteBoard, updateBoardColor, updateBoardName } from '../../_actions'
 import type { BoardWithColumns } from '../../_data'
-import { NewColumn } from './new-column'
 import { ArrowLeft, PaletteIcon, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
 import Block from '@uiw/react-color-block'

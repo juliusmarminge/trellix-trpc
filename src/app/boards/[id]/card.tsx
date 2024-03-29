@@ -1,7 +1,8 @@
 import 'client-only'
 
+import type { MakeAction } from '@/app/_actions'
 import { createItem, deleteItem, moveItem } from '@/app/_actions'
-import { useRef, forwardRef, useState } from 'react'
+import { useRef, forwardRef, useState, useEffect } from 'react'
 import {
   createTransfer,
   genId,
@@ -11,6 +12,8 @@ import {
 } from '@/utils'
 import { Trash2Icon } from 'lucide-react'
 import { Button, TextArea } from '@radix-ui/themes'
+import { useFormState } from 'react-dom'
+import { toast } from 'sonner'
 
 interface CardProps {
   title: string
@@ -107,31 +110,40 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
   },
 )
 
+interface NewCardProps {
+  columnId: string
+  boardId: string
+  nextOrder: number
+  onCardCreate: (item: { id: string; title: string }) => void
+  onComplete: () => void
+}
+
 export function NewCard({
   columnId,
   boardId,
   nextOrder,
   onCardCreate,
   onComplete,
-}: {
-  columnId: string
-  boardId: string
-  nextOrder: number
-  onCardCreate: (item: { id: string; title: string }) => void
-  onComplete: () => void
-}) {
+}: NewCardProps) {
+  const [state, dispatch] = useFormState(
+    createItem as MakeAction<typeof createItem>,
+    undefined,
+  )
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const itemId = genId('itm')
+
+  useEffect(() => {
+    if (state?.error) toast.error(state.error)
+  }, [state])
 
   return (
     <form
       className="flex flex-col gap-2 pt-1 px-2 pb-2"
-      action={async (fd) => {
+      action={(fd) => {
         invariant(textAreaRef.current)
         textAreaRef.current.value = ''
         onCardCreate(Object.fromEntries(fd.entries()) as any)
-        await createItem(fd as any)
+        dispatch(fd)
       }}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -139,7 +151,7 @@ export function NewCard({
         }
       }}
     >
-      <input type="hidden" name="id" value={itemId} />
+      <input type="hidden" name="id" value={genId('itm')} />
       <input type="hidden" name="boardId" value={boardId} />
       <input type="hidden" name="columnId" value={columnId} />
       <input type="hidden" name="order" value={nextOrder} />

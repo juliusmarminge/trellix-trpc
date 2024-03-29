@@ -3,14 +3,28 @@ import 'client-only'
 import { twMerge } from 'tailwind-merge'
 import { EditableText } from '@/app/components/editable-text'
 import type { ItemType } from '@/db/schema'
-
-import { invariant, isCardTransfer, parseTransfer } from '@/utils'
+import { genId, invariant, isCardTransfer, parseTransfer } from '@/utils'
 import { PlusIcon, Trash2Icon } from 'lucide-react'
-import { useState, useCallback, useRef, forwardRef, useOptimistic } from 'react'
+import {
+  useState,
+  useCallback,
+  useRef,
+  forwardRef,
+  useOptimistic,
+  useEffect,
+} from 'react'
 
-import { flushSync } from 'react-dom'
+import { flushSync, useFormState } from 'react-dom'
 import { Card, NewCard } from './card'
-import { deleteColumn, moveItem, updateColumnName } from '@/app/_actions'
+import type { MakeAction } from '@/app/_actions'
+import {
+  createColumn,
+  deleteColumn,
+  moveItem,
+  updateColumnName,
+} from '@/app/_actions'
+import { toast } from 'sonner'
+import { Button } from '@radix-ui/themes'
 
 interface ColumnProps {
   name: string
@@ -62,6 +76,14 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
     },
   )
 
+  const [state, dispatchDelete] = useFormState(
+    deleteColumn as MakeAction<typeof deleteColumn>,
+    undefined,
+  )
+  useEffect(() => {
+    if (state?.error) toast.error(`Error deleting column: ${state.error}`)
+  }, [state])
+
   return (
     <div
       ref={ref}
@@ -111,9 +133,9 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
         </EditableText>
         <form
           className="p-2"
-          action={async (fd) => {
+          action={(fd) => {
             props.onColumnDelete(props.columnId)
-            await deleteColumn(fd as any)
+            dispatchDelete(fd)
           }}
         >
           <input type="hidden" name="boardId" value={props.boardId} />
@@ -163,9 +185,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
           <button
             type="button"
             onClick={() => {
-              flushSync(() => {
-                setEdit(true)
-              })
+              flushSync(() => setEdit(true))
               scrollList()
             }}
             className="flex w-full items-center gap-2 rounded-lg p-2 text-left font-medium text-slate-500 hover:bg-slate-200 focus:bg-slate-200"
@@ -177,3 +197,73 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
     </div>
   )
 })
+
+interface NewColumnProps {
+  boardId: string
+  editInitially: boolean
+  onColumnAdd: (col: { id: string; name: string }) => void
+}
+
+export function NewColumn({
+  boardId,
+  editInitially,
+  onColumnAdd,
+}: NewColumnProps) {
+  const [editing, setEditing] = useState(editInitially)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const [state, dispatch] = useFormState(
+    createColumn as MakeAction<typeof createColumn>,
+    undefined,
+  )
+  useEffect(() => {
+    if (state?.error) toast.error(`Error creating column: ${state.error}`)
+  }, [state])
+
+  return editing ? (
+    <form
+      className="flex max-h-full w-80 flex-col gap-5 overflow-hidden rounded-xl border bg-slate-100 p-2 shadow"
+      action={(fd) => {
+        invariant(inputRef.current, 'missing input ref')
+        inputRef.current.value = ''
+        onColumnAdd({
+          id: fd.get('id') as string,
+          name: fd.get('name') as string,
+        })
+        dispatch(fd)
+      }}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setEditing(false)
+        }
+      }}
+    >
+      <input type="hidden" name="id" value={genId('col')} />
+      <input type="hidden" name="boardId" value={boardId} />
+      <input
+        autoFocus
+        required
+        ref={inputRef}
+        type="text"
+        name="name"
+        className="w-full rounded-lg border border-slate-400 py-1 px-2 font-medium text-black"
+      />
+      <div className="flex justify-between">
+        <Button>Save Column</Button>
+        <Button color="gray" onClick={() => setEditing(false)}>
+          Cancel
+        </Button>
+      </div>
+    </form>
+  ) : (
+    <button
+      onClick={() => {
+        setEditing(true)
+      }}
+      aria-label="Add new column"
+      className="flex h-16 w-16 justify-center rounded-xl bg-black/20 hover:bg-black/10"
+    >
+      <PlusIcon className="size-8 self-center" />
+    </button>
+  )
+}

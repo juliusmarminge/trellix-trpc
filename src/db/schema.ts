@@ -68,9 +68,8 @@ export const Item = sqliteTable(
 export type ItemType = InferSelectModel<typeof Item>
 export const createItemSchema = createInsertSchema(Item, {
   id: z.string().startsWith('itm_'),
-}).omit({
-  order: true,
-})
+  order: z.coerce.number(),
+}).omit({})
 
 export const UserRelations = relations(User, ({ many }) => ({
   boards: many(Board),
