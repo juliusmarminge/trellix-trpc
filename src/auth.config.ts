@@ -11,11 +11,6 @@ declare module 'next-auth' {
 
 export const authConfig = {
   adapter: DrizzleAdapter(db),
-  logger: {
-    debug: console.log,
-    error: console.error,
-    warn: console.warn,
-  },
   session: { strategy: 'jwt' },
   providers: [],
   pages: { signIn: '/' },
