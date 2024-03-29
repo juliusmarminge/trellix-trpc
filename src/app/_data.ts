@@ -46,11 +46,16 @@ export const getBoardWithItems = async (boardId: string) => {
   })
   if (!board) return null
 
+  const columns: Record<string, (typeof board.columns)[number]> = {}
+  for (const col of board.columns) {
+    columns[col.id] = col
+  }
+
   return {
     id: board.id,
     color: board.color,
     name: board.name,
-    columns: Object.fromEntries(board.columns.map((col) => [col.id, col])),
+    columns,
   }
 }
 export type BoardWithColumns = NonNullable<
