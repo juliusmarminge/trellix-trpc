@@ -5,17 +5,18 @@ import { signOut } from '@/auth'
 import { BoardList } from './components/board-list'
 
 import { env } from '@/env'
-import { Columns4, Loader2 } from 'lucide-react'
+import { Columns4 } from 'lucide-react'
 import { SignInForm } from './components/sign-in'
+import { Spinner } from '@radix-ui/themes'
 
 export default async function Home() {
   return (
     <main className="grid h-full grow">
       <Suspense
         fallback={
-          <div className="grid aspect-square w-full max-w-sm place-self-center rounded-2xl bg-slate-900">
-            <Loader2 className="size-16 animate-spin place-self-center stroke-slate-200" />
-          </div>
+          <Spinner size="3">
+            <SignInForm githubEnabled={false} />
+          </Spinner>
         }
       >
         <SignedIn>
