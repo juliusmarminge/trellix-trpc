@@ -13,7 +13,6 @@ import { Button } from '@radix-ui/themes'
 import { PlusIcon, Trash2Icon } from 'lucide-react'
 import {
   forwardRef,
-  startTransition,
   useCallback,
   useEffect,
   useOptimistic,
@@ -53,44 +52,22 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
       state,
       action:
         | { intent: 'add'; id: string; title: string }
-        | { intent: 'delete'; id: string }
-        | { intent: 'move'; id: string; order: number; title: string },
+        | { intent: 'delete'; id: string },
     ) => {
       const newItems = [...state]
-      switch (action.intent) {
-        case 'add': {
-          newItems.push({
-            boardId: props.boardId,
-            columnId: props.columnId,
-            content: null,
-            title: action.title,
-            id: action.id,
-            order: newItems.length,
-          })
-          break
-        }
-        case 'delete': {
-          const idx = newItems.findIndex((item) => item.id === action.id)
-          if (idx > -1) {
-            newItems.splice(idx, 1)
-          }
-          break
-        }
-        case 'move': {
-          const idx = newItems.findIndex((item) => item.id === action.id)
-          if (idx > -1) {
-            newItems[idx].order = action.order
-          } else {
-            newItems.push({
-              boardId: props.boardId,
-              columnId: props.columnId,
-              content: null,
-              title: action.title,
-              id: action.id,
-              order: action.order,
-            })
-          }
-          break
+      if (action.intent === 'add') {
+        newItems.push({
+          boardId: props.boardId,
+          columnId: props.columnId,
+          content: null,
+          title: action.title,
+          id: action.id,
+          order: newItems.length,
+        })
+      } else if (action.intent === 'delete') {
+        const idx = newItems.findIndex((item) => item.id === action.id)
+        if (idx > -1) {
+          newItems.splice(idx, 1)
         }
       }
       return newItems
@@ -124,9 +101,6 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
       onDrop={async (event) => {
         const transfer = parseTransfer(event.dataTransfer)
 
-        startTransition(() =>
-          updateItems({ intent: 'move', order: 1, ...transfer }),
-        )
         await moveItem({
           boardId: props.boardId,
           columnId: props.columnId,
@@ -175,21 +149,22 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
 
       <ul ref={listRef} className="flex-grow overflow-auto">
         {[...items]
-          .sort((a, b) => a.order - b.order)
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
           .map((item, index, items) => (
             <Card
               ref={itemRef}
               key={item.id}
               title={item.title}
-              content={item.content}
+              content={item.content ?? ''}
               id={item.id}
               boardId={props.boardId}
-              columnId={props.columnId}
-              previousOrder={items[index - 1]?.order ?? 0}
               order={item.order}
-              nextOrder={items[index + 1]?.order ?? item.order + 1}
+              columnId={props.columnId}
+              previousOrder={items[index - 1] ? items[index - 1].order : 0}
+              nextOrder={
+                items[index + 1] ? items[index + 1].order : item.order + 1
+              }
               onCardDelete={(id) => updateItems({ intent: 'delete', id })}
-              onCardAdd={(item) => updateItems({ intent: 'add', ...item })}
             />
           ))}
       </ul>
@@ -198,7 +173,9 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
           columnId={props.columnId}
           boardId={props.boardId}
           nextOrder={items.length === 0 ? 1 : items[items.length - 1].order + 1}
-          onCardCreate={(item) => updateItems({ intent: 'add', ...item })}
+          onCardCreate={(item: { id: string; title: string }) =>
+            updateItems({ intent: 'add', ...item })
+          }
           onComplete={() => setEdit(false)}
         />
       ) : (
