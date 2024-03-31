@@ -55,19 +55,24 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
         | { intent: 'delete'; id: string },
     ) => {
       const newItems = [...state]
-      if (action.intent === 'add') {
-        newItems.push({
-          boardId: props.boardId,
-          columnId: props.columnId,
-          content: null,
-          title: action.title,
-          id: action.id,
-          order: newItems.length,
-        })
-      } else if (action.intent === 'delete') {
-        const idx = newItems.findIndex((item) => item.id === action.id)
-        if (idx > -1) {
-          newItems.splice(idx, 1)
+      switch (action.intent) {
+        case 'add': {
+          newItems.push({
+            boardId: props.boardId,
+            columnId: props.columnId,
+            content: null,
+            title: action.title,
+            id: action.id,
+            order: newItems.length,
+          })
+          break
+        }
+        case 'delete': {
+          const idx = newItems.findIndex((item) => item.id === action.id)
+          if (idx > -1) {
+            newItems.splice(idx, 1)
+          }
+          break
         }
       }
       return newItems
@@ -155,15 +160,13 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
               ref={itemRef}
               key={item.id}
               title={item.title}
-              content={item.content ?? ''}
+              content={item.content}
               id={item.id}
               boardId={props.boardId}
-              order={item.order}
               columnId={props.columnId}
-              previousOrder={items[index - 1] ? items[index - 1].order : 0}
-              nextOrder={
-                items[index + 1] ? items[index + 1].order : item.order + 1
-              }
+              previousOrder={items[index - 1]?.order ?? 0}
+              order={item.order}
+              nextOrder={items[index + 1]?.order ?? item.order + 1}
               onCardDelete={(id) => updateItems({ intent: 'delete', id })}
             />
           ))}

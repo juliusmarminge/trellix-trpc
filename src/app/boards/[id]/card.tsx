@@ -81,12 +81,7 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
           }}
         >
           <h3>{title}</h3>
-          <div className="mt-2">
-            {
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-              content || <>&nbsp;</>
-            }
-          </div>
+          <div className="mt-2">{content ?? <>&nbsp;</>}</div>
           <form
             action={async (fd) => {
               props.onCardDelete(id)
