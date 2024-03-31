@@ -65,17 +65,16 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>((props, ref) => {
             id: action.id,
             order: newItems.length,
           })
-          break
+          return newItems
         }
         case 'delete': {
           const idx = newItems.findIndex((item) => item.id === action.id)
           if (idx > -1) {
             newItems.splice(idx, 1)
           }
-          break
+          return newItems
         }
       }
-      return newItems
     },
   )
 

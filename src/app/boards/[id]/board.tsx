@@ -40,14 +40,13 @@ export function Board({ board }: { board: BoardWithColumns }) {
             order: Object.keys(state).length,
             name: action.name,
           })
-          break
+          return state
         }
         case 'delete': {
           state.delete(action.id)
-          break
+          return state
         }
       }
-      return state
     },
   )
 
