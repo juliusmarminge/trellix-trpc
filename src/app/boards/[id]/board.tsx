@@ -31,16 +31,21 @@ export function Board({ board }: { board: BoardWithColumns }) {
         | { intent: 'add'; id: string; name: string }
         | { intent: 'delete'; id: string },
     ) => {
-      if (action.intent === 'add') {
-        state.set(action.id, {
-          boardId: board.id,
-          id: action.id,
-          items: [],
-          order: Object.keys(state).length,
-          name: action.name,
-        })
-      } else if (action.intent === 'delete') {
-        state.delete(action.id)
+      switch (action.intent) {
+        case 'add': {
+          state.set(action.id, {
+            boardId: board.id,
+            id: action.id,
+            items: [],
+            order: Object.keys(state).length,
+            name: action.name,
+          })
+          break
+        }
+        case 'delete': {
+          state.delete(action.id)
+          break
+        }
       }
       return state
     },
@@ -70,9 +75,7 @@ export function Board({ board }: { board: BoardWithColumns }) {
         <NewColumn
           boardId={board.id}
           editInitially={Object.keys(board.columns).length === 0}
-          onColumnAdd={(col: { id: string; name: string }) =>
-            updateColumns({ intent: 'add', ...col })
-          }
+          onColumnAdd={(col) => updateColumns({ intent: 'add', ...col })}
         />
       </div>
     </div>
