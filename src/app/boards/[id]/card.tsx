@@ -10,7 +10,7 @@ import {
 } from '@/utils'
 import { Button, TextArea } from '@radix-ui/themes'
 import { Trash2Icon } from 'lucide-react'
-import { forwardRef, useEffect, useRef, useState } from 'react'
+import { forwardRef, startTransition, useEffect, useRef, useState } from 'react'
 import { useFormState } from 'react-dom'
 import { toast } from 'sonner'
 
@@ -24,6 +24,7 @@ interface CardProps {
   nextOrder: number
   previousOrder: number
   onCardDelete: (cardId: string) => void
+  onCardAdd: (move: { id: string; order: number; title: string }) => void
 }
 type AcceptDrop = 'none' | 'top' | 'bottom'
 
@@ -54,6 +55,13 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
             acceptDrop === 'top' ? props.previousOrder : props.nextOrder
           const moveOrder = (droppedOrder + order) / 2
 
+          startTransition(() =>
+            props.onCardAdd({
+              id: transfer.id,
+              order: moveOrder,
+              title: transfer.title,
+            }),
+          )
           await moveItem({
             boardId,
             columnId,
@@ -79,14 +87,12 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
             event.dataTransfer.effectAllowed = 'move'
             createTransfer(event.dataTransfer, { id, title })
           }}
+          onDragEnd={() => {
+            startTransition(() => props.onCardDelete(id))
+          }}
         >
           <h3>{title}</h3>
-          <div className="mt-2">
-            {
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-              content || <>&nbsp;</>
-            }
-          </div>
+          <div className="mt-2">{content ?? <>&nbsp;</>}</div>
           <form
             action={async (fd) => {
               props.onCardDelete(id)
