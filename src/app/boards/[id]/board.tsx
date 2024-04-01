@@ -4,7 +4,7 @@ import { AlertDialog, Button, IconButton, Popover } from '@radix-ui/themes'
 import Block from '@uiw/react-color-block'
 import { ArrowLeft, PaletteIcon, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useRef } from 'react'
+import { startTransition, useCallback, useRef } from 'react'
 import { deleteBoard, updateBoardColor, updateBoardName } from '../../_actions'
 import type { BoardWithColumns } from '../../_data'
 import { EditableText } from '../../components/editable-text'
@@ -32,7 +32,12 @@ export function Board(props: { board: BoardWithColumns }) {
       ref={scrollContainerRef}
       style={{ backgroundColor: board.color }}
     >
-      <BoardToolbar id={board.id} color={board.color} name={board.name} />
+      <BoardToolbar
+        id={board.id}
+        color={board.color}
+        name={board.name}
+        optUpdateColor={(color) => optUpdate({ intent: 'chg-col', color })}
+      />
       <div className="flex-grow flex h-full min-h-0 items-start gap-4 px-8 pb-4">
         {[...columns.values()].map((col) => {
           return (
@@ -66,7 +71,12 @@ export function Board(props: { board: BoardWithColumns }) {
   )
 }
 
-function BoardToolbar(props: { id: string; color: string; name: string }) {
+function BoardToolbar(props: {
+  id: string
+  color: string
+  name: string
+  optUpdateColor: (color: string) => void
+}) {
   const { id, color, name } = props
 
   return (
@@ -99,6 +109,7 @@ function BoardToolbar(props: { id: string; color: string; name: string }) {
             <Block
               color={color}
               onChange={async (color) => {
+                startTransition(() => props.optUpdateColor(color.hex))
                 await updateBoardColor({
                   boardId: id,
                   newColor: color.hex,

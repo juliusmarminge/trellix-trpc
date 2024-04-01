@@ -3,6 +3,10 @@ import type { ColumnType, ItemType } from '@/db/schema'
 import { invariant } from '@/utils'
 import { useOptimistic } from 'react'
 
+interface ChgCol {
+  intent: 'chg-col'
+  color: string
+}
 interface AddCol {
   intent: 'add-col'
   id: string
@@ -34,8 +38,12 @@ interface MoveItm {
 export const useOptimisticBoard = (board: BoardWithColumns) => {
   const [optBoard, optUpdate] = useOptimistic(
     { ...board },
-    (state, action: AddCol | DelCol | AddItm | DelItm | MoveItm) => {
+    (state, action: ChgCol | AddCol | DelCol | AddItm | DelItm | MoveItm) => {
       switch (action.intent) {
+        case 'chg-col': {
+          state.color = action.color
+          return state
+        }
         case 'add-col': {
           state.columns.push({
             boardId: board.id,
