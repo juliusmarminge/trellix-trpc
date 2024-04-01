@@ -1,10 +1,11 @@
 'use client'
 
 import { AlertDialog, Button, IconButton, Popover } from '@radix-ui/themes'
-import Block from '@uiw/react-color-block'
 import { ArrowLeft, PaletteIcon, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
-import { startTransition, useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import { useFormState } from 'react-dom'
+import type { MakeAction } from '../../_actions'
 import { deleteBoard, updateBoardColor, updateBoardName } from '../../_actions'
 import type { BoardWithColumns } from '../../_data'
 import { EditableText } from '../../components/editable-text'
@@ -71,13 +72,32 @@ export function Board(props: { board: BoardWithColumns }) {
   )
 }
 
+function useDebounce<A extends any[], R>(fn: (...args: A) => R, delay = 100) {
+  const ref = useRef<ReturnType<typeof setTimeout>>()
+  return (...args: A) => {
+    clearTimeout(ref.current)
+    ref.current = setTimeout(() => fn(...args), delay)
+  }
+}
+
 function BoardToolbar(props: {
   id: string
   color: string
   name: string
   optUpdateColor: (color: string) => void
 }) {
-  const { id, color, name } = props
+  const { id, name } = props
+  const [, dispatch] = useFormState(
+    updateBoardColor as MakeAction<typeof updateBoardColor>,
+    undefined,
+  )
+
+  const formRef = useRef<HTMLFormElement>(null)
+  const [color, setColor] = useState(props.color)
+  const updateColor = useDebounce((color: string) => {
+    setColor(color)
+    formRef.current?.requestSubmit()
+  })
 
   return (
     <div className="flex items-center justify-between gap-4">
@@ -106,16 +126,22 @@ function BoardToolbar(props: {
             </IconButton>
           </Popover.Trigger>
           <Popover.Content>
-            <Block
-              color={color}
-              onChange={async (color) => {
-                startTransition(() => props.optUpdateColor(color.hex))
-                await updateBoardColor({
-                  boardId: id,
-                  newColor: color.hex,
-                })
+            <form
+              ref={formRef}
+              action={(fd) => {
+                props.optUpdateColor(fd.get('newColor') as string)
+                dispatch(fd)
               }}
-            />
+            >
+              <input type="hidden" name="boardId" value={id} />
+              <input
+                type="color"
+                name="newColor"
+                value={color}
+                className="h-16"
+                onChange={(e) => updateColor(e.target.value)}
+              />
+            </form>
           </Popover.Content>
         </Popover.Root>
 
