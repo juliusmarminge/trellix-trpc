@@ -7,6 +7,8 @@ createJiti(fileURLToPath(import.meta.url))('./src/env.ts')
 const nextConfig = {
   experimental: {
     ppr: true,
+    instrumentationHook: true,
+    serverComponentsExternalPackages: ['pino', 'pino-pretty'],
   },
 }
 
