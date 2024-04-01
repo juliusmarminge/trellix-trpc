@@ -14,6 +14,7 @@ export const metadata: Metadata = {
 declare module 'react' {
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
   interface CSSProperties {
+    // Allow CSS custom properties - why is this not in the default types?
     [key: `--${string}`]: string | number
   }
 }
