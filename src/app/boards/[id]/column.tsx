@@ -29,7 +29,7 @@ interface ColumnProps {
   boardId: string
   columnId: string
   items: ItemType[]
-  onColumnDelete: (columnId: string) => void
+  onDelete: () => void
   onCardAdd: (item: { id: string; title: string; order: number }) => void
   onCardDelete: (itemId: string) => void
   onCardMove: (itemId: string, toColumnId: string, order: number) => void
@@ -108,7 +108,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
           <form
             className="p-2"
             action={(fd) => {
-              props.onColumnDelete(columnId)
+              props.onDelete()
               dispatchDelete(fd)
             }}
           >

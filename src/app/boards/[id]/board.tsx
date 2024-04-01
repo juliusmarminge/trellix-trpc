@@ -51,8 +51,8 @@ export function Board(props: { board: BoardWithColumns }) {
               columnId={col.id}
               boardId={board.id}
               items={col.items}
-              onColumnDelete={(id) =>
-                optimisticUpdate({ intent: 'delCol', id })
+              onDelete={() =>
+                optimisticUpdate({ intent: 'delCol', id: col.id })
               }
               onCardAdd={(itm) =>
                 optimisticUpdate({ intent: 'addItm', columnId: col.id, ...itm })
