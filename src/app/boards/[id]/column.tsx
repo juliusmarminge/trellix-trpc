@@ -138,8 +138,8 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
                 previousOrder={items[index - 1]?.order ?? 0}
                 order={item.order}
                 nextOrder={items[index + 1]?.order ?? item.order + 1}
-                optDelete={() => props.onCardDelete(item.id)}
-                optMove={(cardId, toColumnId, order) =>
+                onDelete={() => props.onCardDelete(item.id)}
+                onMove={(cardId, toColumnId, order) =>
                   props.onCardMove(cardId, toColumnId, order)
                 }
               />
@@ -152,7 +152,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
             nextOrder={
               items.length === 0 ? 1 : items[items.length - 1].order + 1
             }
-            optCreate={(item) => props.onCardAdd(item)}
+            onCreate={(item) => props.onCardAdd(item)}
             onComplete={() => setEdit(false)}
           />
         ) : (
@@ -177,13 +177,13 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
 interface NewColumnProps {
   boardId: string
   editInitially: boolean
-  onColumnAdd: (col: { id: string; name: string }) => void
+  onCreate: (col: { id: string; name: string }) => void
 }
 
 export function NewColumn({
   boardId,
   editInitially,
-  onColumnAdd,
+  onCreate,
 }: NewColumnProps) {
   const [editing, setEditing] = useState(editInitially)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -202,7 +202,7 @@ export function NewColumn({
       action={(fd) => {
         invariant(inputRef.current, 'missing input ref')
         inputRef.current.value = ''
-        onColumnAdd({
+        onCreate({
           id: fd.get('id') as string,
           name: fd.get('name') as string,
         })

@@ -24,8 +24,8 @@ interface CardProps {
   order: number
   nextOrder: number
   previousOrder: number
-  optDelete: (cardId: string) => void
-  optMove: (cardId: string, toColumnId: string, order: number) => void
+  onDelete: () => void
+  onMove: (cardId: string, toColumnId: string, order: number) => void
 }
 type AcceptDrop = 'none' | 'top' | 'bottom'
 
@@ -56,7 +56,7 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
             acceptDrop === 'top' ? props.previousOrder : props.nextOrder
           const moveOrder = (droppedOrder + order) / 2
 
-          startTransition(() => props.optMove(transfer.id, columnId, moveOrder))
+          startTransition(() => props.onMove(transfer.id, columnId, moveOrder))
           await moveItem({
             boardId,
             columnId,
@@ -84,7 +84,7 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
           <div className="mt-2">{content ?? <>&nbsp;</>}</div>
           <form
             action={async (fd) => {
-              props.optDelete(id)
+              props.onDelete()
               await deleteItem(fd as any)
             }}
           >
@@ -108,7 +108,7 @@ interface NewCardProps {
   columnId: string
   boardId: string
   nextOrder: number
-  optCreate: (item: { id: string; title: string; order: number }) => void
+  onCreate: (item: { id: string; title: string; order: number }) => void
   onComplete: () => void
 }
 
@@ -116,7 +116,7 @@ export function NewCard({
   columnId,
   boardId,
   nextOrder,
-  optCreate,
+  onCreate,
   onComplete,
 }: NewCardProps) {
   const [state, dispatch] = useFormState(
@@ -136,7 +136,7 @@ export function NewCard({
       action={(fd) => {
         invariant(textAreaRef.current)
         textAreaRef.current.value = ''
-        optCreate(Object.fromEntries(fd.entries()) as any)
+        onCreate(Object.fromEntries(fd.entries()) as any)
         dispatch(fd)
       }}
       onBlur={(event) => {

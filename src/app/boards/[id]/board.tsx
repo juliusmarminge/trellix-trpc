@@ -69,7 +69,7 @@ export function Board(props: { board: BoardWithColumns }) {
         <NewColumn
           boardId={board.id}
           editInitially={board.columns.length === 0}
-          onColumnAdd={(col) => optimisticUpdate({ intent: 'addCol', ...col })}
+          onCreate={(col) => optimisticUpdate({ intent: 'addCol', ...col })}
         />
       </div>
     </div>
