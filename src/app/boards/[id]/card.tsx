@@ -13,6 +13,7 @@ import { Trash2Icon } from 'lucide-react'
 import { forwardRef, startTransition, useEffect, useRef, useState } from 'react'
 import { useFormState } from 'react-dom'
 import { toast } from 'sonner'
+import { twMerge } from 'tailwind-merge'
 
 interface CardProps {
   title: string
@@ -65,14 +66,11 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
 
           setAcceptDrop('none')
         }}
-        className={
-          '-mb-[2px] cursor-grab border-t-2 border-b-2 py-1 px-2 last:mb-0 active:cursor-grabbing ' +
-          (acceptDrop === 'top'
-            ? 'border-t-brand-red border-b-transparent'
-            : acceptDrop === 'bottom'
-              ? 'border-b-brand-red border-t-transparent'
-              : 'border-t-transparent border-b-transparent')
-        }
+        className={twMerge(
+          '-mb-[2px] cursor-grab border-t-2 border-b-2 border-t-transparent border-b-transparent py-1 px-2 last:mb-0 active:cursor-grabbing',
+          acceptDrop === 'top' && 'border-t-brand-red border-b-transparent',
+          acceptDrop === 'bottom' && 'border-b-brand-red border-t-transparent',
+        )}
       >
         <div
           draggable
