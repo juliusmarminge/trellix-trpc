@@ -3,48 +3,48 @@ import type { ColumnType, ItemType } from '@/db/schema'
 import { invariant } from '@/utils'
 import { useOptimistic } from 'react'
 
-interface ChgCol {
-  intent: 'chg-col'
+interface UpdCol {
+  intent: 'updClr'
   color: string
 }
 interface AddCol {
-  intent: 'add-col'
+  intent: 'addCol'
   id: string
   name: string
 }
 interface DelCol {
-  intent: 'del-col'
+  intent: 'delCol'
   id: string
 }
 interface AddItm {
-  intent: 'add-itm'
+  intent: 'addItm'
   id: string
   columnId: string
   title: string
   order: number
 }
 interface DelItm {
-  intent: 'del-itm'
+  intent: 'delItm'
   id: string
   columnId: string
 }
 interface MoveItm {
-  intent: 'move-itm'
+  intent: 'moveItm'
   id: string
   toColumnId: string
   order: number
 }
 
 export const useOptimisticBoard = (board: BoardWithColumns) => {
-  const [optBoard, optUpdate] = useOptimistic(
+  const [optimisticBoard, optimisticUpdate] = useOptimistic(
     { ...board },
-    (state, action: ChgCol | AddCol | DelCol | AddItm | DelItm | MoveItm) => {
+    (state, action: UpdCol | AddCol | DelCol | AddItm | DelItm | MoveItm) => {
       switch (action.intent) {
-        case 'chg-col': {
+        case 'updClr': {
           state.color = action.color
           return state
         }
-        case 'add-col': {
+        case 'addCol': {
           state.columns.push({
             boardId: board.id,
             id: action.id,
@@ -53,11 +53,11 @@ export const useOptimisticBoard = (board: BoardWithColumns) => {
           })
           return state
         }
-        case 'del-col': {
+        case 'delCol': {
           state.columns = state.columns.filter((col) => col.id !== action.id)
           return state
         }
-        case 'add-itm': {
+        case 'addItm': {
           board.items[action.id] = {
             id: action.id,
             columnId: action.columnId,
@@ -68,11 +68,11 @@ export const useOptimisticBoard = (board: BoardWithColumns) => {
           }
           return state
         }
-        case 'del-itm': {
+        case 'delItm': {
           delete board.items[action.id]
           return state
         }
-        case 'move-itm': {
+        case 'moveItm': {
           const item = board.items[action.id]
           invariant(item)
           item.columnId = action.toColumnId
@@ -85,7 +85,7 @@ export const useOptimisticBoard = (board: BoardWithColumns) => {
 
   // Add items to columns
   const columns = new Map<string, ColumnType & { items: ItemType[] }>(
-    optBoard.columns.map((col) => [col.id, { ...col, items: [] }]),
+    optimisticBoard.columns.map((col) => [col.id, { ...col, items: [] }]),
   )
   for (const item of Object.values(board.items)) {
     const column = columns.get(item.columnId)
@@ -93,5 +93,5 @@ export const useOptimisticBoard = (board: BoardWithColumns) => {
     column.items.push(item)
   }
 
-  return { board: optBoard, columns, optUpdate }
+  return { board: optimisticBoard, columns, optimisticUpdate }
 }

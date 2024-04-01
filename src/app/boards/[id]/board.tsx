@@ -25,7 +25,7 @@ export function Board(props: { board: BoardWithColumns }) {
     [scrollContainerRef],
   )
 
-  const { board, columns, optUpdate } = useOptimisticBoard(props.board)
+  const { board, columns, optimisticUpdate } = useOptimisticBoard(props.board)
 
   return (
     <div
@@ -37,7 +37,9 @@ export function Board(props: { board: BoardWithColumns }) {
         id={board.id}
         color={board.color}
         name={board.name}
-        optUpdateColor={(color) => optUpdate({ intent: 'chg-col', color })}
+        optUpdateColor={(color) =>
+          optimisticUpdate({ intent: 'updClr', color })
+        }
       />
       <div className="flex-grow flex h-full min-h-0 items-start gap-4 px-8 pb-4">
         {[...columns.values()].map((col) => {
@@ -49,23 +51,25 @@ export function Board(props: { board: BoardWithColumns }) {
               columnId={col.id}
               boardId={board.id}
               items={col.items}
-              onColumnDelete={(id) => optUpdate({ intent: 'del-col', id })}
-              onCardAdd={(item) =>
-                optUpdate({ intent: 'add-itm', columnId: col.id, ...item })
+              onColumnDelete={(id) =>
+                optimisticUpdate({ intent: 'delCol', id })
+              }
+              onCardAdd={(itm) =>
+                optimisticUpdate({ intent: 'addItm', columnId: col.id, ...itm })
               }
               onCardDelete={(id) =>
-                optUpdate({ intent: 'del-itm', columnId: col.id, id })
+                optimisticUpdate({ intent: 'delItm', columnId: col.id, id })
               }
               onCardMove={(id, toColumnId, order) =>
-                optUpdate({ intent: 'move-itm', id, toColumnId, order })
+                optimisticUpdate({ intent: 'moveItm', id, toColumnId, order })
               }
             />
           )
         })}
         <NewColumn
           boardId={board.id}
-          editInitially={Object.keys(board.columns).length === 0}
-          onColumnAdd={(col) => optUpdate({ intent: 'add-col', ...col })}
+          editInitially={board.columns.length === 0}
+          onColumnAdd={(col) => optimisticUpdate({ intent: 'addCol', ...col })}
         />
       </div>
     </div>
