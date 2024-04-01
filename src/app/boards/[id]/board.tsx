@@ -4,13 +4,14 @@ import { AlertDialog, Button, IconButton, Popover } from '@radix-ui/themes'
 import Block from '@uiw/react-color-block'
 import { ArrowLeft, PaletteIcon, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useOptimistic, useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { deleteBoard, updateBoardColor, updateBoardName } from '../../_actions'
 import type { BoardWithColumns } from '../../_data'
 import { EditableText } from '../../components/editable-text'
 import { Column, NewColumn } from './column'
+import { useOptimisticBoard } from './use-optimistic-board'
 
-export function Board({ board }: { board: BoardWithColumns }) {
+export function Board(props: { board: BoardWithColumns }) {
   // scroll right when new columns are added
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const columnRef = useCallback(
@@ -23,32 +24,7 @@ export function Board({ board }: { board: BoardWithColumns }) {
     [scrollContainerRef],
   )
 
-  const [columns, updateColumns] = useOptimistic(
-    new Map(Object.entries(board.columns)),
-    (
-      state,
-      action:
-        | { intent: 'add'; id: string; name: string }
-        | { intent: 'delete'; id: string },
-    ) => {
-      switch (action.intent) {
-        case 'add': {
-          state.set(action.id, {
-            boardId: board.id,
-            id: action.id,
-            items: [],
-            order: Object.keys(state).length,
-            name: action.name,
-          })
-          return state
-        }
-        case 'delete': {
-          state.delete(action.id)
-          return state
-        }
-      }
-    },
-  )
+  const { board, columns, optUpdate } = useOptimisticBoard(props.board)
 
   return (
     <div
@@ -67,14 +43,23 @@ export function Board({ board }: { board: BoardWithColumns }) {
               columnId={col.id}
               boardId={board.id}
               items={col.items}
-              onColumnDelete={(id) => updateColumns({ intent: 'delete', id })}
+              onColumnDelete={(id) => optUpdate({ intent: 'del-col', id })}
+              onCardAdd={(item) =>
+                optUpdate({ intent: 'add-itm', columnId: col.id, ...item })
+              }
+              onCardDelete={(id) =>
+                optUpdate({ intent: 'del-itm', columnId: col.id, id })
+              }
+              onCardMove={(id, toColumnId, order) =>
+                optUpdate({ intent: 'move-itm', id, toColumnId, order })
+              }
             />
           )
         })}
         <NewColumn
           boardId={board.id}
           editInitially={Object.keys(board.columns).length === 0}
-          onColumnAdd={(col) => updateColumns({ intent: 'add', ...col })}
+          onColumnAdd={(col) => optUpdate({ intent: 'add-col', ...col })}
         />
       </div>
     </div>

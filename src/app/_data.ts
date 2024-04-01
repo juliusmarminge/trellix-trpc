@@ -1,5 +1,6 @@
 import { currentUser } from '@/auth'
 import { db } from '@/db/client'
+import type { ItemType } from '@/db/schema'
 import { and, asc, eq } from 'drizzle-orm'
 import { unstable_cache } from 'next/cache'
 
@@ -36,26 +37,24 @@ export const getBoardWithItems = async (boardId: string) => {
   const { id: userId } = await currentUser()
   const board = await db.query.Board.findFirst({
     with: {
-      columns: {
-        with: {
-          items: { orderBy: (fields) => asc(fields.order) },
-        },
-      },
+      items: { orderBy: (fields) => asc(fields.order) },
+      columns: true,
     },
     where: (fields) => and(eq(fields.ownerId, userId), eq(fields.id, boardId)),
   })
   if (!board) return null
 
-  const columns: Record<string, (typeof board.columns)[number]> = {}
-  for (const col of board.columns) {
-    columns[col.id] = col
+  const itemsById: Record<string, ItemType> = {}
+  for (const itm of board.items) {
+    itemsById[itm.id] = itm
   }
 
   return {
     id: board.id,
     color: board.color,
     name: board.name,
-    columns,
+    items: itemsById,
+    columns: board.columns,
   }
 }
 export type BoardWithColumns = NonNullable<

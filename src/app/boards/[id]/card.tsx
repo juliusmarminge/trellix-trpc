@@ -10,7 +10,7 @@ import {
 } from '@/utils'
 import { Button, TextArea } from '@radix-ui/themes'
 import { Trash2Icon } from 'lucide-react'
-import { forwardRef, useEffect, useRef, useState } from 'react'
+import { forwardRef, startTransition, useEffect, useRef, useState } from 'react'
 import { useFormState } from 'react-dom'
 import { toast } from 'sonner'
 
@@ -23,7 +23,8 @@ interface CardProps {
   order: number
   nextOrder: number
   previousOrder: number
-  onCardDelete: (cardId: string) => void
+  optDelete: (cardId: string) => void
+  optMove: (cardId: string, toColumnId: string, order: number) => void
 }
 type AcceptDrop = 'none' | 'top' | 'bottom'
 
@@ -54,6 +55,7 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
             acceptDrop === 'top' ? props.previousOrder : props.nextOrder
           const moveOrder = (droppedOrder + order) / 2
 
+          startTransition(() => props.optMove(transfer.id, columnId, moveOrder))
           await moveItem({
             boardId,
             columnId,
@@ -84,7 +86,7 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
           <div className="mt-2">{content ?? <>&nbsp;</>}</div>
           <form
             action={async (fd) => {
-              props.onCardDelete(id)
+              props.optDelete(id)
               await deleteItem(fd as any)
             }}
           >
@@ -108,7 +110,7 @@ interface NewCardProps {
   columnId: string
   boardId: string
   nextOrder: number
-  onCardCreate: (item: { id: string; title: string }) => void
+  optCreate: (item: { id: string; title: string; order: number }) => void
   onComplete: () => void
 }
 
@@ -116,7 +118,7 @@ export function NewCard({
   columnId,
   boardId,
   nextOrder,
-  onCardCreate,
+  optCreate,
   onComplete,
 }: NewCardProps) {
   const [state, dispatch] = useFormState(
@@ -136,7 +138,7 @@ export function NewCard({
       action={(fd) => {
         invariant(textAreaRef.current)
         textAreaRef.current.value = ''
-        onCardCreate(Object.fromEntries(fd.entries()) as any)
+        optCreate(Object.fromEntries(fd.entries()) as any)
         dispatch(fd)
       }}
       onBlur={(event) => {
