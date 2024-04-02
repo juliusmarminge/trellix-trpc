@@ -23,7 +23,7 @@
     "drizzle-orm": "^0.30.5",
     "drizzle-zod": "^0.5.1",
     "geist": "^1.3.0",
-    "libsql-stateless-easy": "^1.5.4",
+    "libsql-client": "0.6.3",
     "lucide-react": "^0.363.0",
     "nanoid": "^5.0.6",
     "next": "14.2.0-canary.51",
