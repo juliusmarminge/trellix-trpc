@@ -89,8 +89,7 @@ export const useOptimisticBoard = (board: BoardWithColumns) => {
   )
   for (const item of Object.values(board.items)) {
     const column = columns.get(item.columnId)
-    invariant(column, 'Column not found')
-    column.items.push(item)
+    column?.items.push(item)
   }
 
   return { board: optimisticBoard, columns, optimisticUpdate }
