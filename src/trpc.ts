@@ -3,11 +3,11 @@ import { tracing } from '@baselime/node-opentelemetry/trpc'
 import { initTRPC, TRPCError } from '@trpc/server'
 import { experimental_nextAppDirCaller } from '@trpc/server/adapters/next-app-dir'
 import { unstable_cache } from 'next/cache'
-import createPino from 'pino'
 import { cache } from 'react'
 import { z } from 'zod'
 import { auth } from './auth'
 import { db } from './db/client'
+import { createLogger } from './logger'
 
 export { experimental_redirect as redirect } from '@trpc/server/adapters/next-app-dir'
 
@@ -15,21 +15,11 @@ const t = initTRPC.create()
 
 const createContext = cache(async () => {
   const session = await auth()
-  const logger = createPino({
-    base: {
-      source: 'trpc',
-      user: session?.user,
-    },
-    ...(process.env.NODE_ENV === 'development'
-      ? {
-          transport: {
-            target: 'pino-pretty',
-            options: { colorize: true },
-          },
-        }
-      : {}),
+  const log = createLogger('trpc').child({
+    user: session?.user,
   })
-  return { user: session?.user, logger }
+
+  return { user: session?.user, log }
 })
 
 const nextProc = t.procedure
@@ -37,7 +27,7 @@ const nextProc = t.procedure
   .use(async (opts) => {
     const ctx = await createContext()
     const input = await opts.getRawInput()
-    const logger = ctx.logger.child({ input })
+    const log = ctx.log.child({ input })
 
     if (t._config.isDev) {
       // artificial delay in dev
@@ -46,11 +36,11 @@ const nextProc = t.procedure
     }
 
     const start = Date.now()
-    const res = await opts.next({ ctx: { ...ctx, logger } })
+    const res = await opts.next({ ctx: { ...ctx, log } })
     const duration = Date.now() - start
 
-    if (res.ok) logger.info({ duration, result: res.data })
-    else logger.error({ duration, error: res.error })
+    if (res.ok) log.info({ duration, result: res.data })
+    else log.error({ duration, error: res.error })
 
     return res
   })

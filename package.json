@@ -6,7 +6,7 @@
     "build": "next build",
     "db:push": "drizzle-kit push:sqlite --config src/db/config.ts",
     "db:studio": "drizzle-kit studio --config src/db/config.ts",
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "format": "prettier --write . --list-different",
     "start": "next start",
     "lint": "eslint ."

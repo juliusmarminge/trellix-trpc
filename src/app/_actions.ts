@@ -10,11 +10,13 @@ import {
   createItemSchema,
   Item,
 } from '@/db/schema'
+import { createLogger } from '@/logger'
 import { protectedAction, protectedBoardAction, redirect } from '@/trpc'
 import { genId } from '@/utils'
 import { and, count, eq } from 'drizzle-orm'
 import { AuthError } from 'next-auth'
 import { revalidatePath, revalidateTag } from 'next/cache'
+import { isRedirectError } from 'next/dist/client/components/redirect'
 import { z } from 'zod'
 
 /**
@@ -102,7 +104,7 @@ export const updateBoardColor = protectedBoardAction
 
 export const createColumn = protectedBoardAction
   .input(createColumnSchema)
-  .mutation(async ({ input }) => {
+  .mutation(async ({ ctx, input }) => {
     try {
       // FIXME: Single SQL query
       const [{ order }] = await db
@@ -122,7 +124,7 @@ export const createColumn = protectedBoardAction
       // revalidateTag('board_details')
       return { ok: true as const }
     } catch (err) {
-      console.error('Error creating column', err)
+      ctx.log.error('Error creating column', err)
       return { ok: false as const, error: 'Internal server error' }
     }
   })
@@ -143,7 +145,7 @@ export const updateColumnName = protectedBoardAction
 
 export const deleteColumn = protectedBoardAction
   .input(z.object({ columnId: z.string() }))
-  .mutation(async ({ input }) => {
+  .mutation(async ({ ctx, input }) => {
     try {
       await Promise.all([
         db.delete(Item).where(eq(Item.columnId, input.columnId)),
@@ -154,14 +156,14 @@ export const deleteColumn = protectedBoardAction
       // revalidateTag('board_details')
       return { ok: true as const }
     } catch (err) {
-      console.error('Error deleting column', err)
+      ctx.log.error('Error deleting column', err)
       return { ok: false as const, error: 'Internal server error' }
     }
   })
 
 export const createItem = protectedBoardAction
   .input(createItemSchema)
-  .mutation(async ({ input }) => {
+  .mutation(async ({ ctx, input }) => {
     try {
       await db.insert(Item).values({
         id: input.id,
@@ -175,7 +177,7 @@ export const createItem = protectedBoardAction
       // revalidateTag('board_details')
       return { ok: true as const }
     } catch (err) {
-      console.error('Error creating item', err)
+      ctx.log.error('Error creating item', err)
       return { ok: false as const, error: 'Internal server error' }
     }
   })
@@ -211,6 +213,8 @@ export async function signInWithCredentials(
   try {
     await signIn('credentials', formData)
   } catch (error) {
+    if (isRedirectError(error)) throw error
+
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
@@ -219,6 +223,11 @@ export async function signInWithCredentials(
           return { error: 'Something went wrong.' }
       }
     }
+    console.log('Uncaught error signing in', error)
+    createLogger('signInWithCredentials').error(
+      'Uncaught error signing in',
+      error,
+    )
     throw error
   }
 }

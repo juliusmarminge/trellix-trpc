@@ -1,5 +1,6 @@
 import 'server-only'
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
+import { createLogger } from '@/logger'
 import NextAuth from 'next-auth'
 import type { Session } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
@@ -12,11 +13,16 @@ import { User } from '../db/schema'
 import { genId } from '../utils'
 import { authConfig } from './config'
 
+const log = createLogger('auth')
+
 async function hash(password: string) {
   return new Promise<string>((resolve, reject) => {
     const salt = randomBytes(16).toString('hex')
     scrypt(password, salt, 64, (err, derivedKey) => {
-      if (err) reject(err)
+      if (err) {
+        log.error('Error hashing password', err)
+        reject(err)
+      }
       resolve(`${salt}.${derivedKey.toString('hex')}`)
     })
   })
@@ -26,7 +32,10 @@ async function compare(password: string, hash: string) {
   return new Promise<boolean>((resolve, reject) => {
     const [salt, hashKey] = hash.split('.')
     scrypt(password, salt, 64, (err, derivedKey) => {
-      if (err) reject(err)
+      if (err) {
+        log.error('Error comparing password', err)
+        reject(err)
+      }
       resolve(timingSafeEqual(Buffer.from(hashKey, 'hex'), derivedKey))
     })
   })
@@ -39,6 +48,11 @@ const {
   signOut,
 } = NextAuth({
   ...authConfig,
+  logger: {
+    debug: (message, metadata) => log.debug(message, { metadata }),
+    error: (error) => log.error(error),
+    warn: (message) => log.warn(message),
+  },
   providers: [
     Github,
     Credentials({
@@ -58,16 +72,23 @@ const {
               ops.sql`${fields.name} = ${credentials.data.username} COLLATE NOCASE`,
           })
           if (user) {
-            if (!user.hashedPassword) return null
+            if (!user.hashedPassword) {
+              log.debug(`OAuth User ${user.id} attempted signin with password`)
+              return null
+            }
             const pwMatch = await compare(
               credentials.data.password,
               user.hashedPassword,
             )
-            if (!pwMatch) return null
+            if (!pwMatch) {
+              log.debug(`User ${user.id} attempted login with bad password`)
+              return null
+            }
             return { id: user.id, name: user.name }
           }
 
           // Auto-signup new users - whatever...
+          log.debug(`Auto-signup new user ${credentials.data.username}`)
           const [newUser] = await db
             .insert(User)
             .values({
@@ -87,7 +108,14 @@ const {
 
 export { signIn, signOut, GET, POST }
 
-export const auth = cache(uncachedAuth)
+export const auth = cache(async () => {
+  try {
+    return await uncachedAuth()
+  } catch (err) {
+    log.error('Error fetching session', err)
+    return null
+  }
+})
 export const currentUser = cache(async () => {
   const sesh = await auth()
   if (!sesh?.user) redirect('/')
