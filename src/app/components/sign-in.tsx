@@ -3,6 +3,7 @@
 import { signInWithCredentials, signInWithGithub } from '@/app/_actions'
 import { Columns4, Github } from 'lucide-react'
 import { signIn } from 'next-auth/webauthn'
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useFormState } from 'react-dom'
 import { toast } from 'sonner'
@@ -34,9 +35,15 @@ export function SignInForm(props: { githubEnabled: boolean }) {
     if (error) toast.error(error.error)
   }, [error])
 
+  const router = useRouter()
   const [_, dispatchPasskey] = useFormState(async () => {
     try {
       await signIn('passkey')
+      // FIXME:
+      // next-auth doesn't hook into the router so transition
+      // doesn't happen and loading state gets reverted before
+      // the page is refreshed
+      router.refresh()
     } catch {
       toast.error('Failed to sign in with passkey')
     }
@@ -108,9 +115,15 @@ export function SignInForm(props: { githubEnabled: boolean }) {
 }
 
 export function AddPassKey() {
+  const router = useRouter()
   const [_, dispatch] = useFormState(async () => {
     try {
       await signIn('passkey', { action: 'register' })
+      // FIXME:
+      // next-auth doesn't hook into the router so transition
+      // doesn't happen and loading state gets reverted before
+      // the page is refreshed
+      router.refresh()
     } catch {
       toast.error('Failed to register passkey')
     }
