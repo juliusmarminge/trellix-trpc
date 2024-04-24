@@ -5,12 +5,14 @@ import NextAuth from 'next-auth'
 import type { Session } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import Github from 'next-auth/providers/github'
+import Passkey from 'next-auth/providers/passkey'
 import { redirect } from 'next/navigation'
 import { cache } from 'react'
 import { z } from 'zod'
 import { db } from '../db/client'
 import { User } from '../db/schema'
 import { genId } from '../utils'
+import { drizzleAdapter } from './adapter'
 import { authConfig } from './config'
 
 const log = createLogger('auth')
@@ -51,10 +53,18 @@ const {
   logger: {
     debug: (message, metadata) => log.debug(message, { metadata }),
     error: (error) => log.error(error),
-    warn: (message) => log.warn(message),
+    warn: (message) => {
+      if (message.includes('experimental-webauthn')) {
+        // don't spam the console with this
+        return
+      }
+      log.warn(message)
+    },
   },
+  adapter: drizzleAdapter,
   providers: [
     Github,
+    Passkey,
     Credentials({
       name: 'Credentials',
       async authorize(c) {

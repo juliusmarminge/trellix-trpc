@@ -1,6 +1,4 @@
-import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import type { DefaultSession, NextAuthConfig } from 'next-auth'
-import { db } from '../db/client'
 
 declare module 'next-auth' {
   interface Session {
@@ -11,8 +9,8 @@ declare module 'next-auth' {
 }
 
 export const authConfig = {
-  adapter: DrizzleAdapter(db),
   session: { strategy: 'jwt' },
+  experimental: { enableWebAuthn: true },
   providers: [],
   pages: { signIn: '/' },
   callbacks: {

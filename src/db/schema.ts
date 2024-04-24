@@ -44,6 +44,30 @@ export const Account = sqliteTable(
   }),
 )
 
+export const Authenticator = sqliteTable(
+  'authenticator',
+  {
+    id: text('id').notNull().primaryKey(),
+    credentialID: text('credentialId', { length: 255 }).notNull().unique(),
+    userId: text('userId', { length: 255 }).notNull(),
+    providerAccountId: text('providerAccountId', { length: 255 }).notNull(),
+    credentialPublicKey: text('credentialPublicKey', {
+      length: 255,
+    }).notNull(),
+    counter: integer('counter').notNull(),
+    credentialDeviceType: text('credentialDeviceType', {
+      length: 255,
+    }).notNull(),
+    credentialBackedUp: integer('credentialBackedUp', {
+      mode: 'boolean',
+    }).notNull(),
+    transports: text('transports', { length: 255 }),
+  },
+  (authenticator) => ({
+    userIdIdx: index('userId_idx').on(authenticator.userId),
+  }),
+)
+
 export const Board = sqliteTable(
   'board',
   {
@@ -107,10 +131,15 @@ export const createItemSchema = createInsertSchema(Item, {
 export const UserRelations = relations(User, ({ many }) => ({
   boards: many(Board),
   accounts: many(Account),
+  authenticators: many(Authenticator),
 }))
 
 export const AccountRelations = relations(Account, ({ one }) => ({
   user: one(User, { fields: [Account.userId], references: [User.id] }),
+}))
+
+export const authenticatorsRelations = relations(Authenticator, ({ one }) => ({
+  user: one(User, { fields: [Authenticator.userId], references: [User.id] }),
 }))
 
 export const BoardRelations = relations(Board, ({ many, one }) => ({

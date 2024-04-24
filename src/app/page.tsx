@@ -4,7 +4,7 @@ import { Spinner } from '@radix-ui/themes'
 import { Columns4 } from 'lucide-react'
 import { Suspense } from 'react'
 import { BoardList } from './components/board-list'
-import { SignInForm } from './components/sign-in'
+import { AddPassKey, SignInForm } from './components/sign-in'
 import { SubmitButton } from './components/submit-button'
 
 export default async function Home() {
@@ -34,6 +34,7 @@ export default async function Home() {
               </Suspense>
 
               <div className="flex flex-col gap-2">
+                <AddPassKey />
                 <form
                   action={async () => {
                     'use server'
