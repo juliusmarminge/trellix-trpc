@@ -1,3 +1,4 @@
+import { genId } from '@/utils'
 import type { InferSelectModel } from 'drizzle-orm'
 import { relations } from 'drizzle-orm'
 import {
@@ -12,9 +13,11 @@ import type { AdapterAccount } from 'next-auth/adapters'
 import { z } from 'zod'
 
 export const User = sqliteTable('user', {
-  id: text('id').primaryKey(),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => genId('usr')),
   name: text('name').notNull(),
-  email: text('email'),
+  email: text('email').notNull(),
   hashedPassword: text('hashedPassword'),
   emailVerified: integer('emailVerified', { mode: 'timestamp_ms' }),
   image: text('image'),
@@ -47,7 +50,10 @@ export const Account = sqliteTable(
 export const Authenticator = sqliteTable(
   'authenticator',
   {
-    id: text('id').notNull().primaryKey(),
+    id: text('id')
+      .notNull()
+      .primaryKey()
+      .$defaultFn(() => genId('ath')),
     credentialID: text('credentialId', { length: 255 }).notNull().unique(),
     userId: text('userId', { length: 255 }).notNull(),
     providerAccountId: text('providerAccountId', { length: 255 }).notNull(),
@@ -71,7 +77,9 @@ export const Authenticator = sqliteTable(
 export const Board = sqliteTable(
   'board',
   {
-    id: text('id').primaryKey(),
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => genId('brd')),
     name: text('name').notNull(),
     color: text('color').notNull(),
     ownerId: text('owner_id').notNull(),
@@ -91,7 +99,9 @@ export const createBoardSchema = createInsertSchema(Board, {
 export const Column = sqliteTable(
   'column',
   {
-    id: text('id').primaryKey(),
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => genId('col')),
     name: text('name').notNull(),
     order: integer('order').notNull(),
     boardId: text('board_id').notNull(),
@@ -110,7 +120,9 @@ export const createColumnSchema = createInsertSchema(Column, {
 export const Item = sqliteTable(
   'item',
   {
-    id: text('id').primaryKey(),
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => genId('itm')),
     title: text('title').notNull(),
     content: text('content'),
     order: integer('order').notNull(),

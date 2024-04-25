@@ -1,5 +1,5 @@
 import { db } from '@/db/client'
-import { Account, Authenticator } from '@/db/schema'
+import { Account, Authenticator, User } from '@/db/schema'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { and, eq } from 'drizzle-orm'
 import type {
@@ -12,7 +12,13 @@ import type {
  * Drizzle Adapter with Passkey support
  */
 export const drizzleAdapter = {
-  ...DrizzleAdapter(db),
+  ...DrizzleAdapter(db, {
+    usersTable: User,
+    accountsTable: Account,
+    // I don't use DB Sessions or Email sign-in so I don't have these tables
+    sessionsTable: {} as any,
+    verificationTokensTable: {} as any,
+  }),
   getAccount: async (providerAccountId, provider) => {
     const [account] = await db
       .select()

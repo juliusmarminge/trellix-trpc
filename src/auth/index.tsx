@@ -11,7 +11,6 @@ import { cache } from 'react'
 import { z } from 'zod'
 import { db } from '../db/client'
 import { User } from '../db/schema'
-import { genId } from '../utils'
 import { drizzleAdapter } from './adapter'
 import { authConfig } from './config'
 
@@ -51,7 +50,7 @@ const {
 } = NextAuth({
   ...authConfig,
   logger: {
-    debug: (message, metadata) => log.debug(message, { metadata }),
+    debug: (message, metadata) => log.debug(`${message} %o`, { metadata }),
     error: (error) => log.error(error),
     warn: (message) => {
       if (message.includes('experimental-webauthn')) {
@@ -102,7 +101,7 @@ const {
           const [newUser] = await db
             .insert(User)
             .values({
-              id: genId('usr'),
+              email: `${credentials.data.username}@example.com`,
               name: credentials.data.username,
               hashedPassword: await hash(credentials.data.password),
             })

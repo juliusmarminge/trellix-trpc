@@ -2,6 +2,7 @@ import createPino from 'pino'
 
 export const createLogger = (module: string) =>
   createPino({
+    // level: 'debug',
     base: {
       source: module,
     },
