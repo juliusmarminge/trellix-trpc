@@ -3,8 +3,7 @@
 import { AlertDialog, Button, IconButton, Popover } from '@radix-ui/themes'
 import { ArrowLeft, PaletteIcon, Trash2Icon } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useRef, useState } from 'react'
-import { useFormState } from 'react-dom'
+import { useActionState, useCallback, useRef, useState } from 'react'
 import type { MakeAction } from '../../_actions'
 import { deleteBoard, updateBoardColor, updateBoardName } from '../../_actions'
 import type { BoardWithColumns } from '../../_data'
@@ -91,7 +90,7 @@ function BoardToolbar(props: {
   optUpdateColor: (color: string) => void
 }) {
   const { id, name } = props
-  const [, dispatch] = useFormState(
+  const [, dispatch] = useActionState(
     updateBoardColor as MakeAction<typeof updateBoardColor>,
     undefined,
   )

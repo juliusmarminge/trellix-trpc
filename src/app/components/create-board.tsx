@@ -3,13 +3,13 @@
 import { genRandomName } from '@/utils'
 import { faker } from '@faker-js/faker'
 import { PlusIcon } from 'lucide-react'
-import { useFormState } from 'react-dom'
+import { useActionState } from 'react'
 import type { MakeAction } from '../_actions'
 import { createBoard } from '../_actions'
 import { SubmitButton } from './submit-button'
 
 export function CreateBoard() {
-  const [, dispatch] = useFormState(
+  const [, dispatch] = useActionState(
     createBoard as MakeAction<typeof createBoard>,
     undefined,
   )

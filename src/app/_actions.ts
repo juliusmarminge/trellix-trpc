@@ -10,7 +10,6 @@ import {
   createItemSchema,
   Item,
 } from '@/db/schema'
-import { createLogger } from '@/logger'
 import { protectedAction, protectedBoardAction, redirect } from '@/trpc'
 import { genId } from '@/utils'
 import { and, count, eq } from 'drizzle-orm'
@@ -21,8 +20,8 @@ import { z } from 'zod'
 
 /**
  * Temporary little type hack to cast a trpc action
- * when passing the action to `useFormState`
- * @example useFormState(createBoard as MakeAction<typeof createBoard>)
+ * when passing the action to `useActionState`
+ * @example useActionState(createBoard as MakeAction<typeof createBoard>)
  */
 export type MakeAction<T> = T extends (...args: any[]) => Promise<infer U>
   ? (state: any, fd: FormData) => Promise<U>
@@ -223,11 +222,7 @@ export async function signInWithCredentials(
           return { error: 'Something went wrong.' }
       }
     }
-    console.log('Uncaught error signing in', error)
-    createLogger('signInWithCredentials').error(
-      'Uncaught error signing in',
-      error,
-    )
+    console.error('Uncaught error signing in', error)
     throw error
   }
 }

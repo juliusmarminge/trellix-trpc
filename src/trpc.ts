@@ -7,7 +7,6 @@ import { cache } from 'react'
 import { z } from 'zod'
 import { auth } from './auth'
 import { db } from './db/client'
-import { createLogger } from './logger'
 
 export { experimental_redirect as redirect } from '@trpc/server/adapters/next-app-dir'
 
@@ -15,10 +14,10 @@ const t = initTRPC.create()
 
 const createContext = cache(async () => {
   const session = await auth()
-  const log = createLogger('trpc').child({
-    user: session?.user,
-  })
-
+  // const log = createLogger('trpc').child({
+  //   user: session?.user,
+  // })
+  const log = console
   return { user: session?.user, log }
 })
 
@@ -26,8 +25,9 @@ const nextProc = t.procedure
   .use(tracing({ collectInput: true, collectResult: true }))
   .use(async (opts) => {
     const ctx = await createContext()
-    const input = await opts.getRawInput()
-    const log = ctx.log.child({ input })
+    // const input = await opts.getRawInput()
+    // const log = ctx.log.child({ input })
+    const log = ctx.log
 
     if (t._config.isDev) {
       // artificial delay in dev

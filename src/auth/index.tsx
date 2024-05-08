@@ -1,6 +1,5 @@
 import 'server-only'
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
-import { createLogger } from '@/logger'
 import NextAuth from 'next-auth'
 import type { Session } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
@@ -14,7 +13,7 @@ import { User } from '../db/schema'
 import { drizzleAdapter } from './adapter'
 import { authConfig } from './config'
 
-const log = createLogger('auth')
+const log = console // createLogger('auth')
 
 async function hash(password: string) {
   return new Promise<string>((resolve, reject) => {

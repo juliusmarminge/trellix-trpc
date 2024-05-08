@@ -3,8 +3,7 @@
 import { signInWithCredentials, signInWithGithub } from '@/app/_actions'
 import { Columns4, Github } from 'lucide-react'
 import { signIn } from 'next-auth/webauthn'
-import { useEffect } from 'react'
-import { useFormState } from 'react-dom'
+import { useActionState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { SubmitButton } from './submit-button'
 
@@ -28,13 +27,13 @@ const PasskeyIcon = (props: React.SVGProps<SVGSVGElement>) => (
 )
 
 export function SignInForm(props: { githubEnabled: boolean }) {
-  const [error, dispatch] = useFormState(signInWithCredentials, undefined)
+  const [error, dispatch] = useActionState(signInWithCredentials, undefined)
 
   useEffect(() => {
     if (error) toast.error(error.error)
   }, [error])
 
-  const [_, dispatchPasskey] = useFormState(async () => {
+  const [_, dispatchPasskey] = useActionState(async () => {
     try {
       await signIn('passkey')
     } catch {
@@ -108,7 +107,7 @@ export function SignInForm(props: { githubEnabled: boolean }) {
 }
 
 export function AddPassKey() {
-  const [_, dispatch] = useFormState(async () => {
+  const [_, dispatch] = useActionState(async () => {
     try {
       await signIn('passkey', { action: 'register' })
     } catch {

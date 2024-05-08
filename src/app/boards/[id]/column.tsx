@@ -14,12 +14,13 @@ import { PlusIcon, Trash2Icon } from 'lucide-react'
 import {
   forwardRef,
   startTransition,
+  useActionState,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react'
-import { flushSync, useFormState } from 'react-dom'
+import { flushSync } from 'react-dom'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 import { Card, NewCard } from './card'
@@ -50,7 +51,7 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
       listRef.current.scrollTop = listRef.current.scrollHeight
     }
 
-    const [state, dispatchDelete] = useFormState(
+    const [state, dispatchDelete] = useActionState(
       deleteColumn as MakeAction<typeof deleteColumn>,
       undefined,
     )
@@ -188,7 +189,7 @@ export function NewColumn({
   const [editing, setEditing] = useState(editInitially)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [state, dispatch] = useFormState(
+  const [state, dispatch] = useActionState(
     createColumn as MakeAction<typeof createColumn>,
     undefined,
   )

@@ -10,8 +10,14 @@ import {
 } from '@/utils'
 import { Button, TextArea } from '@radix-ui/themes'
 import { Trash2Icon } from 'lucide-react'
-import { forwardRef, startTransition, useEffect, useRef, useState } from 'react'
-import { useFormState } from 'react-dom'
+import {
+  forwardRef,
+  startTransition,
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -119,7 +125,7 @@ export function NewCard({
   onCreate,
   onComplete,
 }: NewCardProps) {
-  const [state, dispatch] = useFormState(
+  const [state, dispatch] = useActionState(
     createItem as MakeAction<typeof createItem>,
     undefined,
   )

@@ -8,7 +8,6 @@ const nextConfig = {
   experimental: {
     ppr: true,
     instrumentationHook: true,
-    serverComponentsExternalPackages: ['pino', 'pino-pretty'],
   },
 }
 
