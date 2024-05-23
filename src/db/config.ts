@@ -8,6 +8,6 @@ export const credentials = {
 
 export default {
   schema: './src/db/schema.ts',
-  driver: 'turso',
+  dialect: 'sqlite',
   dbCredentials: credentials,
 } satisfies Config
