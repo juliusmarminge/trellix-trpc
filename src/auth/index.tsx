@@ -116,14 +116,7 @@ const {
 
 export { signIn, signOut, GET, POST }
 
-export const auth = cache(async () => {
-  try {
-    return await uncachedAuth()
-  } catch (err) {
-    log.error('Error fetching session', err)
-    return null
-  }
-})
+export const auth = cache(uncachedAuth)
 export const currentUser = cache(async () => {
   const sesh = await auth()
   if (!sesh?.user) redirect('/')
