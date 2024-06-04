@@ -10,14 +10,7 @@ import {
 } from '@/utils'
 import { Button, TextArea } from '@radix-ui/themes'
 import { Trash2Icon } from 'lucide-react'
-import {
-  forwardRef,
-  startTransition,
-  useActionState,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { forwardRef, useActionState, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { twMerge } from 'tailwind-merge'
 
@@ -62,15 +55,14 @@ export const Card = forwardRef<HTMLLIElement, CardProps>(
             acceptDrop === 'top' ? props.previousOrder : props.nextOrder
           const moveOrder = (droppedOrder + order) / 2
 
-          startTransition(() => props.onMove(transfer.id, columnId, moveOrder))
+          props.onMove(transfer.id, columnId, moveOrder)
+          setAcceptDrop('none')
           await moveItem({
             boardId,
             columnId,
             id: transfer.id,
             order: moveOrder,
           })
-
-          setAcceptDrop('none')
         }}
         className={twMerge(
           '-mb-[2px] cursor-grab border-t-2 border-b-2 border-t-transparent border-b-transparent py-1 px-2 last:mb-0 active:cursor-grabbing',
@@ -125,11 +117,12 @@ export function NewCard({
   onCreate,
   onComplete,
 }: NewCardProps) {
+  const [itemId, setItemId] = useState(genId('itm'))
   const [state, dispatch] = useActionState(
     createItem as MakeAction<typeof createItem>,
     undefined,
   )
-  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -138,20 +131,20 @@ export function NewCard({
 
   return (
     <form
+      key={itemId}
       className="flex flex-col gap-2 pt-1 px-2 pb-2"
       action={(fd) => {
-        invariant(textAreaRef.current)
-        textAreaRef.current.value = ''
         onCreate(Object.fromEntries(fd.entries()) as any)
         dispatch(fd)
       }}
+      onSubmit={() => setItemId(genId('itm'))}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
           onComplete()
         }
       }}
     >
-      <input type="hidden" name="id" value={genId('itm')} />
+      <input type="hidden" name="id" value={itemId} />
       <input type="hidden" name="boardId" value={boardId} />
       <input type="hidden" name="columnId" value={columnId} />
       <input type="hidden" name="order" value={nextOrder} />
@@ -159,7 +152,6 @@ export function NewCard({
       <TextArea
         autoFocus
         required
-        ref={textAreaRef}
         name="title"
         placeholder="Enter a title for this card"
         className="h-14 w-full resize-none rounded-lg py-1 px-2 text-sm shadow outline-none placeholder:text-sm placeholder:text-slate-500"

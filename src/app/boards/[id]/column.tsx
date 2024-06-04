@@ -13,7 +13,6 @@ import { Button } from '@radix-ui/themes'
 import { PlusIcon, Trash2Icon } from 'lucide-react'
 import {
   forwardRef,
-  startTransition,
   useActionState,
   useCallback,
   useEffect,
@@ -77,15 +76,14 @@ export const Column = forwardRef<HTMLDivElement, ColumnProps>(
         }}
         onDrop={async (event) => {
           const transfer = parseTransfer(event.dataTransfer)
-          startTransition(() => props.onCardMove(transfer.id, columnId, 1))
+          props.onCardMove(transfer.id, columnId, 1)
+          setAcceptDrop(false)
           await moveItem({
             boardId: boardId,
             columnId: columnId,
             id: transfer.id,
             order: 1,
           })
-
-          setAcceptDrop(false)
         }}
       >
         <div className="flex items-center gap-2 p-2">
@@ -186,8 +184,8 @@ export function NewColumn({
   editInitially,
   onCreate,
 }: NewColumnProps) {
+  const [columnId, setColumnId] = useState(genId('col'))
   const [editing, setEditing] = useState(editInitially)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const [state, dispatch] = useActionState(
     createColumn as MakeAction<typeof createColumn>,
@@ -199,28 +197,27 @@ export function NewColumn({
 
   return editing ? (
     <form
+      key={columnId}
       className="flex max-h-full w-80 flex-col gap-5 overflow-hidden rounded-xl border bg-slate-100 p-2 shadow"
       action={(fd) => {
-        invariant(inputRef.current, 'missing input ref')
-        inputRef.current.value = ''
         onCreate({
           id: fd.get('id') as string,
           name: fd.get('name') as string,
         })
         dispatch(fd)
       }}
+      onSubmit={() => setColumnId(genId('col'))}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
           setEditing(false)
         }
       }}
     >
-      <input type="hidden" name="id" value={genId('col')} />
+      <input type="hidden" name="id" value={columnId} />
       <input type="hidden" name="boardId" value={boardId} />
       <input
         autoFocus
         required
-        ref={inputRef}
         type="text"
         name="name"
         className="w-full rounded-lg border border-slate-400 py-1 px-2 font-medium text-black"
